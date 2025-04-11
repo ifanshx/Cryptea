@@ -34,7 +34,7 @@ export default function Home() {
                     width={1000}
                     height={1000}
                     className="bg-cover mt-5 bg-fixed bg-center animate-on-load 
-                           opacity-0 translate-y-6 transition-all duration-700 ease-out"
+                     animate-float     opacity-0 translate-y-6 transition-all duration-700 ease-out"
                 />
 
                 <h1 className={`${mclaren.className} mt-10 mb-1 text-white text-center text-3xl md:text-5xl lg:text-5xl font-extrabold leading-[1.2] md:leading-tight
