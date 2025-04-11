@@ -309,7 +309,7 @@ const GenerateImagePage = () => {
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 rounded-xl" />
                   <img
                     src={`/assets/${activeTrait}/${asset}`}
-                    className="w-full h-full object-cover transform transition-transform duration-300 group-hover:scale-110"
+                    className="w-full h-full object-cover transform rounded-xl transition-transform duration-300 group-hover:scale-110"
                     alt={asset}
                   />
                   {selectedTraits[activeTrait] === asset && (
