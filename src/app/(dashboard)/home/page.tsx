@@ -70,9 +70,8 @@ const HomePage = () => {
   const stats = [
     {
       title: "Wallet Balance",
-      value: `${balanceData?.formatted.slice(0, 5) || "0.00"} ${
-        balanceData?.symbol || "TEA"
-      }`,
+      value: `${balanceData?.formatted.slice(0, 5) || "0.00"} ${balanceData?.symbol || "TEA"
+        }`,
       icon: CurrencyDollarIcon,
       color: "from-purple-500 to-pink-500",
     },
@@ -108,9 +107,11 @@ const HomePage = () => {
       <div className="text-center mb-8 w-full space-y-6">
         <div className="relative inline-block">
           <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-500 rounded-xl blur-2xl opacity-30 animate-pulse" />
+
           <h1 className="relative text-5xl md:text-6xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">
             Ethereal Entities
           </h1>
+
         </div>
         <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto animate-fade-in-up delay-100">
           Where digital art meets blockchain magic. Create, collect, and trade
