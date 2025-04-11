@@ -72,6 +72,8 @@ const Toast: React.FC<ToastProps> = ({
     info: <InformationCircleIcon className="w-6 h-6" />,
   };
 
+
+
   // Styles for the progress bar
   const progressBarStyle: CSSProperties = {
     width: `${progress}%`,

@@ -1,0 +1,523 @@
+{
+  "Background": [
+    {
+      "trait": "Bad Signal",
+      "weight": "1",
+      "occurrence": "25 in 2000 editions (1.25 %)"
+    },
+    {
+      "trait": "Blue",
+      "weight": "5",
+      "occurrence": "113 in 2000 editions (5.65 %)"
+    },
+    {
+      "trait": "coulds",
+      "weight": "7",
+      "occurrence": "167 in 2000 editions (8.35 %)"
+    },
+    {
+      "trait": "Dead Red",
+      "weight": "2",
+      "occurrence": "51 in 2000 editions (2.55 %)"
+    },
+    {
+      "trait": "Dusty",
+      "weight": "6",
+      "occurrence": "147 in 2000 editions (7.35 %)"
+    },
+    {
+      "trait": "Gloomy",
+      "weight": "4",
+      "occurrence": "95 in 2000 editions (4.75 %)"
+    },
+    {
+      "trait": "Green",
+      "weight": "9",
+      "occurrence": "193 in 2000 editions (9.65 %)"
+    },
+    {
+      "trait": "Grey",
+      "weight": "5",
+      "occurrence": "109 in 2000 editions (5.45 %)"
+    },
+    {
+      "trait": "Khaki",
+      "weight": "5",
+      "occurrence": "113 in 2000 editions (5.65 %)"
+    },
+    {
+      "trait": "Laguna",
+      "weight": "6",
+      "occurrence": "140 in 2000 editions (7.00 %)"
+    },
+    {
+      "trait": "Majestic",
+      "weight": "1",
+      "occurrence": "20 in 2000 editions (1.00 %)"
+    },
+    {
+      "trait": "Orange",
+      "weight": "6",
+      "occurrence": "155 in 2000 editions (7.75 %)"
+    },
+    {
+      "trait": "Paper",
+      "weight": "1",
+      "occurrence": "18 in 2000 editions (0.90 %)"
+    },
+    {
+      "trait": "Purple",
+      "weight": "3",
+      "occurrence": "75 in 2000 editions (3.75 %)"
+    },
+    {
+      "trait": "Red",
+      "weight": "6",
+      "occurrence": "151 in 2000 editions (7.55 %)"
+    },
+    {
+      "trait": "stars",
+      "weight": "4",
+      "occurrence": "105 in 2000 editions (5.25 %)"
+    },
+    {
+      "trait": "swirl",
+      "weight": "4",
+      "occurrence": "105 in 2000 editions (5.25 %)"
+    },
+    {
+      "trait": "White",
+      "weight": "6",
+      "occurrence": "129 in 2000 editions (6.45 %)"
+    },
+    {
+      "trait": "Yellow",
+      "weight": "5",
+      "occurrence": "89 in 2000 editions (4.45 %)"
+    }
+  ],
+  "Back": [
+    {
+      "trait": "Arcade",
+      "weight": "1",
+      "occurrence": "108 in 2000 editions (5.40 %)"
+    },
+    {
+      "trait": "Blank",
+      "weight": "10",
+      "occurrence": "1282 in 2000 editions (64.10 %)"
+    },
+    {
+      "trait": "Double Wing",
+      "weight": "1",
+      "occurrence": "126 in 2000 editions (6.30 %)"
+    },
+    {
+      "trait": "Skate Bat",
+      "weight": "2",
+      "occurrence": "244 in 2000 editions (12.20 %)"
+    },
+    {
+      "trait": "Toy Gun",
+      "weight": "2",
+      "occurrence": "240 in 2000 editions (12.00 %)"
+    }
+  ],
+  "Body": [
+    {
+      "trait": "Cosmic Body",
+      "weight": "2",
+      "occurrence": "220 in 2000 editions (11.00 %)"
+    },
+    {
+      "trait": "DeJavu",
+      "weight": "1",
+      "occurrence": "108 in 2000 editions (5.40 %)"
+    },
+    {
+      "trait": "Dirty",
+      "weight": "2",
+      "occurrence": "198 in 2000 editions (9.90 %)"
+    },
+    {
+      "trait": "Goldie bodie",
+      "weight": "8",
+      "occurrence": "783 in 2000 editions (39.15 %)"
+    },
+    {
+      "trait": "King Atlantis",
+      "weight": "2",
+      "occurrence": "186 in 2000 editions (9.30 %)"
+    },
+    {
+      "trait": "Oh My God",
+      "weight": "2",
+      "occurrence": "209 in 2000 editions (10.45 %)"
+    },
+    {
+      "trait": "Rocky",
+      "weight": "2",
+      "occurrence": "203 in 2000 editions (10.15 %)"
+    },
+    {
+      "trait": "Slimey",
+      "weight": "1",
+      "occurrence": "93 in 2000 editions (4.65 %)"
+    }
+  ],
+  "Cloth": [
+    {
+      "trait": "Absolute Wing",
+      "weight": "1",
+      "occurrence": "27 in 2000 editions (1.35 %)"
+    },
+    {
+      "trait": "Blank",
+      "weight": "9",
+      "occurrence": "216 in 2000 editions (10.80 %)"
+    },
+    {
+      "trait": "Bomber",
+      "weight": "5",
+      "occurrence": "104 in 2000 editions (5.20 %)"
+    },
+    {
+      "trait": "Chinesse Suit",
+      "weight": "4",
+      "occurrence": "77 in 2000 editions (3.85 %)"
+    },
+    {
+      "trait": "Cyclops Uniform",
+      "weight": "6",
+      "occurrence": "127 in 2000 editions (6.35 %)"
+    },
+    {
+      "trait": "Cycpreme",
+      "weight": "3",
+      "occurrence": "80 in 2000 editions (4.00 %)"
+    },
+    {
+      "trait": "Dragon Head",
+      "weight": "7",
+      "occurrence": "157 in 2000 editions (7.85 %)"
+    },
+    {
+      "trait": "Farmer",
+      "weight": "5",
+      "occurrence": "104 in 2000 editions (5.20 %)"
+    },
+    {
+      "trait": "Formal Suit",
+      "weight": "6",
+      "occurrence": "127 in 2000 editions (6.35 %)"
+    },
+    {
+      "trait": "Hawai Party",
+      "weight": "5",
+      "occurrence": "94 in 2000 editions (4.70 %)"
+    },
+    {
+      "trait": "Jersey Cyckers",
+      "weight": "6",
+      "occurrence": "148 in 2000 editions (7.40 %)"
+    },
+    {
+      "trait": "Kill Inside",
+      "weight": "2",
+      "occurrence": "35 in 2000 editions (1.75 %)"
+    },
+    {
+      "trait": "King Cape",
+      "weight": "2",
+      "occurrence": "42 in 2000 editions (2.10 %)"
+    },
+    {
+      "trait": "Metal Jacket",
+      "weight": "2",
+      "occurrence": "45 in 2000 editions (2.25 %)"
+    },
+    {
+      "trait": "Puffer Jacket",
+      "weight": "3",
+      "occurrence": "58 in 2000 editions (2.90 %)"
+    },
+    {
+      "trait": "Stab on my heart",
+      "weight": "8",
+      "occurrence": "155 in 2000 editions (7.75 %)"
+    },
+    {
+      "trait": "Synthetische ",
+      "weight": "4",
+      "occurrence": "78 in 2000 editions (3.90 %)"
+    },
+    {
+      "trait": "T Shirt",
+      "weight": "8",
+      "occurrence": "179 in 2000 editions (8.95 %)"
+    },
+    {
+      "trait": "Varsity Jacket",
+      "weight": "5",
+      "occurrence": "103 in 2000 editions (5.15 %)"
+    },
+    {
+      "trait": "Yukata",
+      "weight": "2",
+      "occurrence": "44 in 2000 editions (2.20 %)"
+    }
+  ],
+  "Head": [
+    {
+      "trait": "Atlantis",
+      "weight": "7",
+      "occurrence": "500 in 2000 editions (25.00 %)"
+    },
+    {
+      "trait": "Cosmic Hat",
+      "weight": "5",
+      "occurrence": "406 in 2000 editions (20.30 %)"
+    },
+    {
+      "trait": "God",
+      "weight": "2",
+      "occurrence": "144 in 2000 editions (7.20 %)"
+    },
+    {
+      "trait": "Goldie Hat",
+      "weight": "6",
+      "occurrence": "440 in 2000 editions (22.00 %)"
+    },
+    {
+      "trait": "Red Devil",
+      "weight": "2",
+      "occurrence": "141 in 2000 editions (7.05 %)"
+    },
+    {
+      "trait": "Slimey Head",
+      "weight": "1",
+      "occurrence": "74 in 2000 editions (3.70 %)"
+    },
+    {
+      "trait": "Stone Head",
+      "weight": "1",
+      "occurrence": "68 in 2000 editions (3.40 %)"
+    },
+    {
+      "trait": "Tatoos",
+      "weight": "3",
+      "occurrence": "227 in 2000 editions (11.35 %)"
+    }
+  ],
+  "Eyes": [
+    {
+      "trait": "Black Sunglasses",
+      "weight": "9",
+      "occurrence": "335 in 2000 editions (16.75 %)"
+    },
+    {
+      "trait": "Blind World",
+      "weight": "4",
+      "occurrence": "150 in 2000 editions (7.50 %)"
+    },
+    {
+      "trait": "Bored",
+      "weight": "6",
+      "occurrence": "240 in 2000 editions (12.00 %)"
+    },
+    {
+      "trait": "Candy Eyes",
+      "weight": "3",
+      "occurrence": "114 in 2000 editions (5.70 %)"
+    },
+    {
+      "trait": "Maddd!!",
+      "weight": "6",
+      "occurrence": "240 in 2000 editions (12.00 %)"
+    },
+    {
+      "trait": "Mutant Eyes",
+      "weight": "5",
+      "occurrence": "195 in 2000 editions (9.75 %)"
+    },
+    {
+      "trait": "Normal Eyes",
+      "weight": "5",
+      "occurrence": "199 in 2000 editions (9.95 %)"
+    },
+    {
+      "trait": "Radar Eye",
+      "weight": "2",
+      "occurrence": "81 in 2000 editions (4.05 %)"
+    },
+    {
+      "trait": "Retro",
+      "weight": "2",
+      "occurrence": "86 in 2000 editions (4.30 %)"
+    },
+    {
+      "trait": "Sad",
+      "weight": "9",
+      "occurrence": "360 in 2000 editions (18.00 %)"
+    }
+  ],
+  "Hat": [
+    {
+      "trait": "Baseball Hat",
+      "weight": "6",
+      "occurrence": "136 in 2000 editions (6.80 %)"
+    },
+    {
+      "trait": "Bear In My Head",
+      "weight": "2",
+      "occurrence": "36 in 2000 editions (1.80 %)"
+    },
+    {
+      "trait": "Blank",
+      "weight": "9",
+      "occurrence": "176 in 2000 editions (8.80 %)"
+    },
+    {
+      "trait": "Captain Hat",
+      "weight": "2",
+      "occurrence": "53 in 2000 editions (2.65 %)"
+    },
+    {
+      "trait": "Fur Hat",
+      "weight": "8",
+      "occurrence": "206 in 2000 editions (10.30 %)"
+    },
+    {
+      "trait": "Glass Horn",
+      "weight": "7",
+      "occurrence": "162 in 2000 editions (8.10 %)"
+    },
+    {
+      "trait": "Half Cyborg",
+      "weight": "2",
+      "occurrence": "49 in 2000 editions (2.45 %)"
+    },
+    {
+      "trait": "Halo Angel",
+      "weight": "2",
+      "occurrence": "34 in 2000 editions (1.70 %)"
+    },
+    {
+      "trait": "King Of Crown",
+      "weight": "1",
+      "occurrence": "33 in 2000 editions (1.65 %)"
+    },
+    {
+      "trait": "Magic Hat",
+      "weight": "5",
+      "occurrence": "136 in 2000 editions (6.80 %)"
+    },
+    {
+      "trait": "Mechanic",
+      "weight": "7",
+      "occurrence": "161 in 2000 editions (8.05 %)"
+    },
+    {
+      "trait": "Mummy",
+      "weight": "7",
+      "occurrence": "155 in 2000 editions (7.75 %)"
+    },
+    {
+      "trait": "ONI",
+      "weight": "5",
+      "occurrence": "105 in 2000 editions (5.25 %)"
+    },
+    {
+      "trait": "Prototype",
+      "weight": "2",
+      "occurrence": "44 in 2000 editions (2.20 %)"
+    },
+    {
+      "trait": "Pump",
+      "weight": "5",
+      "occurrence": "110 in 2000 editions (5.50 %)"
+    },
+    {
+      "trait": "Spread Out",
+      "weight": "1",
+      "occurrence": "19 in 2000 editions (0.95 %)"
+    },
+    {
+      "trait": "Stab On My Brain",
+      "weight": "6",
+      "occurrence": "137 in 2000 editions (6.85 %)"
+    },
+    {
+      "trait": "turtle head",
+      "weight": "5",
+      "occurrence": "111 in 2000 editions (5.55 %)"
+    },
+    {
+      "trait": "Warm Hat",
+      "weight": "5",
+      "occurrence": "125 in 2000 editions (6.25 %)"
+    },
+    {
+      "trait": "Whales",
+      "weight": "1",
+      "occurrence": "12 in 2000 editions (0.60 %)"
+    }
+  ],
+  "Mouth": [
+    {
+      "trait": "Angry",
+      "weight": "6",
+      "occurrence": "291 in 2000 editions (14.55 %)"
+    },
+    {
+      "trait": "Doodle Tabaco",
+      "weight": "2",
+      "occurrence": "106 in 2000 editions (5.30 %)"
+    },
+    {
+      "trait": "Gangsta Mask",
+      "weight": "3",
+      "occurrence": "170 in 2000 editions (8.50 %)"
+    },
+    {
+      "trait": "Gas Mask",
+      "weight": "4",
+      "occurrence": "221 in 2000 editions (11.05 %)"
+    },
+    {
+      "trait": "Gummy",
+      "weight": "5",
+      "occurrence": "268 in 2000 editions (13.40 %)"
+    },
+    {
+      "trait": "Hehe",
+      "weight": "8",
+      "occurrence": "401 in 2000 editions (20.05 %)"
+    },
+    {
+      "trait": "Hell Gate",
+      "weight": "2",
+      "occurrence": "112 in 2000 editions (5.60 %)"
+    },
+    {
+      "trait": "Lollipop",
+      "weight": "2",
+      "occurrence": "103 in 2000 editions (5.15 %)"
+    },
+    {
+      "trait": "Oni Mask",
+      "weight": "2",
+      "occurrence": "106 in 2000 editions (5.30 %)"
+    },
+    {
+      "trait": "Smoker",
+      "weight": "1",
+      "occurrence": "50 in 2000 editions (2.50 %)"
+    },
+    {
+      "trait": "Wheat",
+      "weight": "3",
+      "occurrence": "172 in 2000 editions (8.60 %)"
+    }
+  ]
+}

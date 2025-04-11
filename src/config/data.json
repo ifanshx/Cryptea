@@ -1,0 +1,102 @@
+[
+  {
+    "name": "Ethereal Entities #1",
+    "description": "Unique digital collectible with randomly generated traits",
+    "image": "/assets/EtherealEntities.png",
+    "dna": "a1b2c3d4e5f6g7h8i9j0",
+    "edition": 1,
+    "date": 1694282244473,
+    "external_url": "https://www.cryptea.xyz/",
+    "attributes": [
+      { "trait_type": "Background", "value": "Galaxy Purple" },
+      { "trait_type": "Back", "value": "Dragon Wings" },
+      { "trait_type": "Body", "value": "Crystal Armor" },
+      { "trait_type": "Cloth", "value": "Royal Mantle" },
+      { "trait_type": "Head", "value": "Crown of Thorns" },
+      { "trait_type": "Eyes", "value": "Laser Blue" },
+      { "trait_type": "Hat", "value": "Pharaoh Headdress" },
+      { "trait_type": "Mouth", "value": "Gold Grille" }
+    ],
+    "compiler": "CyclopsopolisNFT"
+  },
+  {
+    "name": "Ethereal Entities #2",
+    "description": "Unique digital collectible with randomly generated traits",
+    "image": "/assets/EtherealEntities.png",
+    "dna": "k1l2m3n4o5p6q7r8s9t0",
+    "edition": 2,
+    "date": 1694282244473,
+    "external_url": "https://www.cryptea.xyz/",
+    "attributes": [
+      { "trait_type": "Background", "value": "Neon Jungle" },
+      { "trait_type": "Back", "value": "Mechanical Tentacles" },
+      { "trait_type": "Body", "value": "Lava Skin" },
+      { "trait_type": "Cloth", "value": "Cyber Jacket" },
+      { "trait_type": "Head", "value": "Cyborg Helmet" },
+      { "trait_type": "Eyes", "value": "Glowing Red" },
+      { "trait_type": "Hat", "value": "Data Crown" },
+      { "trait_type": "Mouth", "value": "Fanged Smile" }
+    ],
+    "compiler": "CyclopsopolisNFT"
+  },
+  {
+    "name": "Ethereal Entities #3",
+    "description": "Unique digital collectible with randomly generated traits",
+    "image": "/assets/EtherealEntities.png",
+    "dna": "u1v2w3x4y5z6a7b8c9d0",
+    "edition": 3,
+    "date": 1694282244473,
+    "external_url": "https://www.cryptea.xyz/",
+    "attributes": [
+      { "trait_type": "Background", "value": "Ocean Depth" },
+      { "trait_type": "Back", "value": "Angel Wings" },
+      { "trait_type": "Body", "value": "Translucent Skin" },
+      { "trait_type": "Cloth", "value": "Silk Robe" },
+      { "trait_type": "Head", "value": "Halo Crown" },
+      { "trait_type": "Eyes", "value": "Starry Night" },
+      { "trait_type": "Hat", "value": "Feathered Cap" },
+      { "trait_type": "Mouth", "value": "Mysterious Smirk" }
+    ],
+    "compiler": "CyclopsopolisNFT"
+  },
+  {
+    "name": "Ethereal Entities #4",
+    "description": "Unique digital collectible with randomly generated traits",
+    "image": "/assets/EtherealEntities.png",
+    "dna": "e1f2g3h4i5j6k7l8m9n0",
+    "edition": 4,
+    "date": 1694282244473,
+    "external_url": "https://www.cryptea.xyz/",
+    "attributes": [
+      { "trait_type": "Background", "value": "Volcanic Fury" },
+      { "trait_type": "Back", "value": "Energy Shield" },
+      { "trait_type": "Body", "value": "Obsidian Armor" },
+      { "trait_type": "Cloth", "value": "Battle Scarf" },
+      { "trait_type": "Head", "value": "Warrior Helm" },
+      { "trait_type": "Eyes", "value": "Burning Orange" },
+      { "trait_type": "Hat", "value": "Viking Horns" },
+      { "trait_type": "Mouth", "value": "Battle Cry" }
+    ],
+    "compiler": "CyclopsopolisNFT"
+  },
+  {
+    "name": "Ethereal Entities #5",
+    "description": "Unique digital collectible with randomly generated traits",
+    "image": "/assets/EtherealEntities.png",
+    "dna": "o1p2q3r4s5t6u7v8w9x0",
+    "edition": 5,
+    "date": 1694282244473,
+    "external_url": "https://www.cryptea.xyz/",
+    "attributes": [
+      { "trait_type": "Background", "value": "Cyber City" },
+      { "trait_type": "Back", "value": "Holographic Wings" },
+      { "trait_type": "Body", "value": "Nanotech Surface" },
+      { "trait_type": "Cloth", "value": "Neon Trenchcoat" },
+      { "trait_type": "Head", "value": "VR Headset" },
+      { "trait_type": "Eyes", "value": "Binary Vision" },
+      { "trait_type": "Hat", "value": "Data Stream Crown" },
+      { "trait_type": "Mouth", "value": "Circuit Grin" }
+    ],
+    "compiler": "CyclopsopolisNFT"
+  }
+]
