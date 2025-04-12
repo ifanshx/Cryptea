@@ -13,7 +13,7 @@ export default function DashboardLayout({
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 relative">
       <Sidebar />
-      <ConnectWallet /> {/* ✅ Sudah sesuai, bisa diaktifkan */}
+      <ConnectWallet />
       <main className="md:ml-64 p-6 lg:p-8 py-20">
         {" "}
         <Suspense fallback={<Loading />}>
