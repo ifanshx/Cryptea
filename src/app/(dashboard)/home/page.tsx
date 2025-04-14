@@ -77,7 +77,7 @@ const HomePage = () => {
     },
     {
       title: "Your Entities",
-      value: mintedCount,
+      value: mintedCount || "0",
       icon: PhotoIcon,
       color: "from-blue-500 to-cyan-500",
     },
@@ -89,7 +89,7 @@ const HomePage = () => {
     },
     {
       title: "Staked Rewards",
-      value: `${totalRewards} TEA`, // Gunakan nilai yang sudah dihitung
+      value: `${totalRewards} TEA`,
       icon: CurrencyDollarIcon,
       color: "from-emerald-500 to-green-500",
     },

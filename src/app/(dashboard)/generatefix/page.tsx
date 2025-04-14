@@ -4,8 +4,9 @@ import {
   CubeTransparentIcon,
   PhotoIcon,
   SparklesIcon,
-  CurrencyDollarIcon,
+  CurrencyDollarIcon, ArrowPathIcon
 } from "@heroicons/react/24/outline";
+
 import { METADATA_TRAITS } from "@/constants/metadata";
 import { useToast } from "@/context/ToastContext";
 import { PinataSDK } from "pinata";
@@ -50,13 +51,15 @@ const GenerateImagePage = () => {
   const traits = getOrderedTraits();
   const { showToast } = useToast();
   const { isConnected, address } = useAccount();
-
+  const [isRandomizing, setIsRandomizing] = useState(false);
   const [activeTrait, setActiveTrait] = useState<TraitType>("Background");
   const [selectedTraits, setSelectedTraits] = useState<SelectedTraits>(
     traits.reduce((acc, trait) => ({ ...acc, [trait]: "" }), {} as SelectedTraits)
   );
   const [isUploading, setIsUploading] = useState(false);
   const [pendingFiles, setPendingFiles] = useState<string[]>([]);
+  const [isComposing, setIsComposing] = useState(false);
+
 
   const { data: balance } = useBalance({ address });
   const {
@@ -93,15 +96,24 @@ const GenerateImagePage = () => {
         setPendingFiles([]);
       }
     };
-    return () => { cleanup(); };
+    return () => { void cleanup(); };
   }, [pendingFiles]);
 
-  const handleRandomize = useCallback(() => {
+  const handleRandomize = useCallback(async () => {
+    setIsRandomizing(true);
+    // beri jeda singkat supaya spinner sempat muncul
+    await new Promise((r) => setTimeout(r, 50));
+
     const randomTraits = traits.reduce((acc, trait) => {
       const options = METADATA_TRAITS[trait];
-      return { ...acc, [trait]: options[Math.floor(Math.random() * options.length)] || "" };
+      return {
+        ...acc,
+        [trait]: options[Math.floor(Math.random() * options.length)] || "",
+      };
     }, {} as SelectedTraits);
+
     setSelectedTraits(randomTraits);
+    setIsRandomizing(false);
   }, [traits]);
 
   const handleSelectTrait = useCallback((trait: string) => {
@@ -112,27 +124,32 @@ const GenerateImagePage = () => {
   }, [activeTrait]);
 
   const composeImage = useCallback(async (selectedTraits: SelectedTraits) => {
-    const canvas = document.createElement("canvas");
-    canvas.width = 512;
-    canvas.height = 512;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) throw new Error("Failed to get canvas context");
+    setIsComposing(true);
+    try {
+      const canvas = document.createElement("canvas");
+      canvas.width = 512;
+      canvas.height = 512;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("Failed to get canvas context");
 
-    for (const trait of LAYER_ORDER) {
-      const asset = selectedTraits[trait];
-      if (!asset) continue;
-      await new Promise<void>((resolve) => {
-        const img = new Image();
-        img.onload = () => {
-          const x = (canvas.width - img.width) / 2;
-          const y = (canvas.height - img.height) / 2;
-          ctx.drawImage(img, x, y, img.width, img.height);
-          resolve();
-        };
-        img.src = `/assets/${trait}/${asset}`;
-      });
+      for (const trait of LAYER_ORDER) {
+        const asset = selectedTraits[trait];
+        if (!asset) continue;
+        await new Promise<void>((resolve) => {
+          const img = new Image();
+          img.onload = () => {
+            const x = (canvas.width - img.width) / 2;
+            const y = (canvas.height - img.height) / 2;
+            ctx.drawImage(img, x, y, img.width, img.height);
+            resolve();
+          };
+          img.src = `/assets/${trait}/${asset}`;
+        });
+      }
+      return canvas.toDataURL("image/webp", 0.9);
+    } finally {
+      setIsComposing(false);
     }
-    return canvas.toDataURL("image/webp", 0.9);
   }, []);
 
   const handleMint = useCallback(async () => {
@@ -324,7 +341,23 @@ const GenerateImagePage = () => {
 
           <div className="sticky top-6 h-fit bg-white/80 backdrop-blur-lg rounded-2xl p-6 border border-white/20 shadow-xl">
             <div className="aspect-square bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border-2 border-gray-100 overflow-hidden relative">
-              {previewImage.length > 0 ? (
+              {isComposing ? (
+                <div className="h-full flex flex-col items-center justify-center space-y-3 animate-pulse">
+                  <ArrowPathIcon className="w-8 h-8 text-purple-500 animate-spin" />
+                  <p className="text-gray-500 text-sm font-medium">
+                    Assembling your NFT...
+                  </p>
+                  <div className="flex space-x-2">
+                    {LAYER_ORDER.map((trait, i) => (
+                      <div
+                        key={trait}
+                        className="h-1 w-1 bg-purple-300 rounded-full"
+                        style={{ animationDelay: `${i * 0.1}s` }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ) : previewImage.length > 0 ? (
                 <>
                   {previewImage.map((src, i) => (
                     <img
@@ -335,7 +368,6 @@ const GenerateImagePage = () => {
                       alt="NFT Preview"
                     />
                   ))}
-
                 </>
               ) : (
                 <div className="h-full flex items-center justify-center">
@@ -371,10 +403,21 @@ const GenerateImagePage = () => {
           <div className="bg-white/90 backdrop-blur-xl rounded-xl p-4 border border-white/20 shadow-2xl flex gap-4">
             <button
               onClick={handleRandomize}
-              className="flex items-center gap-2 px-6 py-3 bg-white hover:bg-gray-50 text-gray-600 rounded-lg transition-all duration-300 shadow-sm hover:shadow-md"
+              disabled={isRandomizing}
+              className={`flex items-center gap-2 px-6 py-3 rounded-lg transition-all duration-300 shadow-sm
+              ${isRandomizing
+                  ? "bg-gray-200 cursor-not-allowed"
+                  : "bg-white hover:bg-gray-50 text-gray-600 hover:shadow-md"
+                }`}
             >
-              <CubeTransparentIcon className="w-5 h-5 text-purple-600" />
-              <span className="font-medium">Randomize</span>
+              {isRandomizing ? (
+                <ArrowPathIcon className="w-5 h-5 animate-spin text-purple-600" />
+              ) : (
+                <CubeTransparentIcon className="w-5 h-5 text-purple-600" />
+              )}
+              <span className="font-medium">
+                {isRandomizing ? "Randomizing..." : "Randomize"}
+              </span>
             </button>
 
             <button
