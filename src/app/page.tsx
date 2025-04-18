@@ -18,7 +18,7 @@ export default function Home() {
     }, []);
 
     return (
-        <div className="relative h-screen overflow-hidden bg-cover bg-fixed bg-center"
+        <div className="relative h-screen overflow-hidden min-h-screen bg-cover bg-fixed bg-center transition-colors duration-300"
             style={{ backgroundImage: "url('/BackgroundHome.png')" }}>
 
             {/* Header Section */}
