@@ -19,7 +19,7 @@ export default function Home() {
 
     return (
         <div className="relative h-screen overflow-hidden min-h-screen bg-cover bg-fixed bg-center transition-colors duration-300"
-            style={{ backgroundImage: "url('/BackgroundHome.png')" }}>
+            style={{ backgroundImage: "url('/backgroundhome.png')" }}>
 
             {/* Header Section */}
             <div className="flex flex-col items-center pt-15 px-4 gap-3  ">
