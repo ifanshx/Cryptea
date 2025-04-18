@@ -3,41 +3,36 @@ import React from 'react'
 
 const FooterHome = () => {
     return (
-        <footer className="w-full mt-20 pb-6 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto rounded-full bg-white/20 backdrop-blur-lg border border-white/10">
-                <div className="flex flex-col md:flex-row items-center justify-between px-6 py-4 md:py-6 gap-4 md:gap-0">
-                    {/* Left Section */}
-                    <span className="text-sm md:text-base text-center md:text-left">
-                        ◎ Cryptea 2025 🌱
-                    </span>
-
-                    {/* Navigation Links */}
-                    <div className="flex flex-wrap justify-center gap-4 md:gap-6">
-                        <Link
-                            href="#"
-                            className="text-sm md:text-base text-primary hover:text-primary-dark transition-colors px-2 py-1"
-                        >
-                            Github
-                        </Link>
-                        <Link
-                            href="#"
-                            className="text-sm md:text-base text-primary hover:text-primary-dark transition-colors px-2 py-1"
-                        >
-                            Whitepaper
-                        </Link>
-                        <Link
-                            href="#"
-                            className="text-sm md:text-base text-primary hover:text-primary-dark transition-colors px-2 py-1"
-                        >
-                            Support
-                        </Link>
-                        <Link
-                            href="#"
-                            className="text-sm md:text-base text-primary hover:text-primary-dark transition-colors px-2 py-1"
-                        >
-                            Twitter
-                        </Link>
-                    </div>
+        <footer className="w-full absolute bottom-0 h-16 flex items-center justify-center">
+            <div className="max-w-full mx-auto rounded-full bg-white/20 backdrop-blur-lg border border-white/10">
+                <div className="flex items-center justify-center space-x-4 text-white/80 py-3 px-72">
+                    <Link
+                        href="#"
+                        className="text-sm hover:text-white transition-colors"
+                    >
+                        Github
+                    </Link>
+                    <span className="text-white/30">|</span>
+                    <Link
+                        href="#"
+                        className="text-sm hover:text-white transition-colors"
+                    >
+                        Whitepaper
+                    </Link>
+                    <span className="text-white/30">|</span>
+                    <Link
+                        href="#"
+                        className="text-sm hover:text-white transition-colors"
+                    >
+                        Support
+                    </Link>
+                    <span className="text-white/30">|</span>
+                    <Link
+                        href="#"
+                        className="text-sm hover:text-white transition-colors"
+                    >
+                        Twitter
+                    </Link>
                 </div>
             </div>
         </footer>
