@@ -1,12 +1,12 @@
 // components/Sidebar.tsx
-'use client'
-import Link from 'next/link'
+"use client";
+import Link from "next/link";
 import {
   HomeIcon,
   LockClosedIcon,
   SparklesIcon,
-  PhotoIcon
-} from '@heroicons/react/24/outline'
+  PhotoIcon,
+} from "@heroicons/react/24/outline";
 
 const Items = [
   { name: "Home", path: "/home", icon: HomeIcon },
@@ -18,36 +18,56 @@ const Items = [
 
 export default function Sidebar({
   isOpen,
+  isMobile,
   onHover,
+  onClose,
 }: {
-  isOpen: boolean
-  onHover: (isOpen: boolean) => void
+  isOpen: boolean;
+  isMobile: boolean;
+  onHover: (open: boolean) => void;
+  onClose: () => void;
 }) {
   return (
-    <aside
-      className={`fixed h-full bg-white border-r border-gray-200 z-50 transition-all duration-300 ${isOpen ? 'w-64' : 'w-20'
-        }`}
-      onMouseEnter={() => onHover(true)}
-      onMouseLeave={() => onHover(false)}
-    >
-      <div className="p-4 space-y-2">
-        <nav className="space-y-2">
-          {Items.map((item, index) => (
-            <Link
-              key={index}
-              href={item.path}
-              className="flex items-center p-3 rounded-lg hover:bg-gray-100 text-gray-700 hover:text-gray-900 transition-colors group"
-            >
-              <item.icon className="h-6 w-6 group-hover:text-blue-600" />
-              {isOpen && (
-                <span className="ml-3 font-medium group-hover:text-blue-600">
-                  {item.name}
-                </span>
-              )}
-            </Link>
-          ))}
-        </nav>
-      </div>
-    </aside>
-  )
+    <>
+      {isMobile && isOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-30 z-40"
+          onClick={onClose}
+        />
+      )}
+      <aside
+        className={`
+          fixed top-0 left-0 h-full bg-white border-r border-gray-200 z-50
+          transform transition-transform duration-300
+          ${
+            isMobile
+              ? isOpen
+                ? "translate-x-0"
+                : "-translate-x-full"
+              : "translate-x-0"
+          }
+          ${isMobile ? "w-64" : isOpen ? "w-64" : "w-20"}
+        `}
+        onMouseEnter={() => onHover(true)}
+        onMouseLeave={() => onHover(false)}
+      >
+        <div className="p-4 space-y-4">
+          <nav className="space-y-2">
+            {Items.map((item, idx) => (
+              <Link
+                key={idx}
+                href={item.path}
+                className="flex items-center p-3 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <item.icon className="h-6 w-6 text-gray-600" />
+                {((!isMobile && isOpen) || isMobile) && (
+                  <span className="ml-3 font-medium">{item.name}</span>
+                )}
+              </Link>
+            ))}
+          </nav>
+        </div>
+      </aside>
+    </>
+  );
 }

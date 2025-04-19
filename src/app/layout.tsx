@@ -1,14 +1,14 @@
 import { Providers } from "./providers";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { McLaren } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/context/ToastContext";
 
-const inter = Inter({ subsets: ["latin"] });
+const mclaren = McLaren({ weight: "400", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Ethereal Entities",
-  description: "Ethereal Entities Dashboard",
+  title: "Cryptea",
+  description: "Cryptea Dashboard",
 };
 
 export default function RootLayout({
@@ -18,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={mclaren.className}>
         <Providers>
           <ToastProvider>{children}</ToastProvider>
         </Providers>

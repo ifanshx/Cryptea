@@ -2,7 +2,10 @@
 
 export default function LoadingSekleton() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 to-purple-50 p-4">
+    <div
+      className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: "url('/backgroundhome.png')" }}
+    >
       <div className="text-center space-y-6">
         {/* Animated Unicorn */}
         {/* <div className="text-6xl animate-float duration-1000 ease-in-out infinite">
