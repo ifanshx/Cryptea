@@ -1,5 +1,9 @@
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+// components/HomeConnect.tsx
+"use client";
+
 import React from "react";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 const HomeConnect = () => {
   return (
@@ -31,43 +35,31 @@ const HomeConnect = () => {
               },
             })}
           >
-            {(() => {
-              if (!connected) {
-                return (
-                  <button
-                    onClick={openConnectModal}
-                    type="button"
-                    className=" cursor-pointer rounded-full bg-white px-5 py-2 lg:px-6 lg:py-2.5 text-sm lg:text-base font-semibold text-primary shadow-md hover:shadow-lg transition-all duration-300 active:scale-95"
-                  >
-                    Connect Wallet
-                  </button>
-                );
-              }
-
-              if (chain.unsupported) {
-                return (
-                  <button
-                    onClick={openChainModal}
-                    type="button"
-                    className=" cursor-pointer rounded-full bg-red-500 px-5 py-2 text-sm font-semibold text-white shadow-md hover:bg-red-600 transition-all duration-300 active:scale-95"
-                  >
-                    Wrong Network
-                  </button>
-                );
-              }
-
-              return (
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={openAccountModal}
-                    type="button"
-                    className=" cursor-pointer rounded-full bg-white px-5 py-2 text-sm font-semibold text-primary shadow-md hover:shadow-lg transition-all duration-300 active:scale-95"
-                  >
-                    {account.displayName}
-                  </button>
-                </div>
-              );
-            })()}
+            {!connected ? (
+              <button
+                onClick={openConnectModal}
+                className="flex items-center gap-1 text-gray-900 hover:text-gray-700 font-medium text-sm"
+              >
+                Connect Wallet
+                <ChevronDownIcon className="w-4 h-4" />
+              </button>
+            ) : chain.unsupported ? (
+              <button
+                onClick={openChainModal}
+                className="flex items-center gap-1 text-red-600 hover:text-red-800 font-medium text-sm"
+              >
+                Wrong Network
+                <ChevronDownIcon className="w-4 h-4" />
+              </button>
+            ) : (
+              <button
+                onClick={openAccountModal}
+                className="flex items-center gap-1 text-gray-900 hover:text-gray-700 font-medium text-sm"
+              >
+                {account.displayName}
+                <ChevronDownIcon className="w-4 h-4" />
+              </button>
+            )}
           </div>
         );
       }}

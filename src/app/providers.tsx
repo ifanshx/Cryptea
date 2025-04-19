@@ -13,7 +13,7 @@ export const TeaChain = defineChain({
   rpcUrls: {
     default: {
       http: [
-        "https://tea-sepolia.g.alchemy.com/v2/3l6Bfa41Ys1M65b-CnMk1NwWDCtH_Yfv",
+        "https://tea-sepolia.g.alchemy.com/public",
       ],
     },
   },

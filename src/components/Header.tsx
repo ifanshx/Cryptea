@@ -1,13 +1,11 @@
 // components/Header.tsx
 "use client";
 
-import { useEffect, useState } from "react";
 import {
   Bars3Icon,
   MagnifyingGlassIcon,
-  ClockIcon,
-  WalletIcon,
 } from "@heroicons/react/24/outline";
+import HomeConnect from "./HomeConnect";
 
 export default function Header({
   onMenuToggle,
@@ -18,22 +16,8 @@ export default function Header({
   isMobile?: boolean;
   sidebarOpen?: boolean;
 }) {
-  const [time, setTime] = useState("00:00");
-  const [isConnected, setIsConnected] = useState(false);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      const now = new Date();
-      setTime(
-        now.toLocaleTimeString("en-US", {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false,
-        })
-      );
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
+
 
   return (
     <header
@@ -67,32 +51,19 @@ export default function Header({
         <div className="flex items-center space-x-4">
           <div className="hidden md:flex items-center space-x-4">
             <div className="flex items-center space-x-2 text-gray-600">
-              <ClockIcon className="h-5 w-5" />
-              <span className="font-medium">{time}</span>
+
             </div>
             <div className="flex space-x-2">
               <span className="px-3 py-1 rounded-full bg-gray-100 text-sm">
-                CTEA
+                <span className="font-medium">24.00</span> CTEA
               </span>
               <span className="px-3 py-1 rounded-full bg-gray-100 text-sm">
-                TEA
+                <span className="font-medium">222.00</span> TEA
               </span>
             </div>
           </div>
 
-          <button
-            onClick={() => setIsConnected((c) => !c)}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-full transition-colors ${
-              isConnected
-                ? "bg-green-500 hover:bg-green-600 text-white"
-                : "bg-blue-600 hover:bg-blue-700 text-white"
-            }`}
-          >
-            <WalletIcon className="h-5 w-5" />
-            <span className="font-semibold">
-              {isConnected ? "Connected" : "Connect Wallet"}
-            </span>
-          </button>
+          <HomeConnect />
         </div>
       </div>
     </header>
