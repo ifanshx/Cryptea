@@ -41,14 +41,13 @@ export default function HomePage() {
   const { activeIndex, goToSlide } = useCarousel(carouselImages.length);
 
   return (
-    <div className="space-y-8 px-4 sm:px-6 lg:px-8 py-6">
+    <div className="space-y-8 px-2 sm:px-4 lg:px-8 py-4 sm:py-6">
       {/* Main Carousel */}
       <div className="relative rounded-xl overflow-hidden group">
-        <div className="relative h-60 md:h-80 transition-all duration-500">
+        <div className="relative h-40 sm:h-56 md:h-72 lg:h-80 transition-all duration-500">
           <img
             src={carouselImages[activeIndex]}
-            alt="Banner"
-            className="w-full h-full object-cover absolute inset-0 transition-opacity duration-500"
+            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black opacity-30" />
 
@@ -67,65 +66,53 @@ export default function HomePage() {
       </div>
 
       {/* Thumbnail Carousel */}
-      <div className="overflow-x-auto scrollbar-hide pb-2">
-        <div className="max-w-2xl mx-auto px-4"> {/* Container pembatas dan padding */}
-          <div className="flex justify-center space-x-4"> {/* Flex tengah dengan spacing */}
-            {carouselImages.map((src, idx) => (
-              <button
-                key={idx}
-                onClick={() => goToSlide(idx)}
-                className={`flex-shrink-0 w-48 h-28 rounded-lg overflow-hidden border-2 transition-all ${idx === activeIndex ? 'border-blue-500' : 'border-transparent'
-                  }`}
-              >
-                <img
-                  src={src}
-                  alt={`Preview ${idx + 1}`}
-                  className="w-full h-full object-cover transform hover:scale-105 transition-transform"
-                />
-              </button>
-            ))}
-          </div>
+      <div className="overflow-x-auto scrollbar-hide">
+        <div className="w-max mx-auto flex space-x-4 px-4">
+          {carouselImages.map((src, idx) => (
+            <button
+              key={idx}
+              onClick={() => goToSlide(idx)}
+              className={`
+                flex-shrink-0 w-32 sm:w-40 md:w-48 h-20 sm:h-24 md:h-28
+                rounded-lg overflow-hidden border-2 transition-all
+                ${idx === activeIndex ? 'border-blue-500' : 'border-transparent'}
+              `}
+            >
+              <img
+                src={src}
+                className="w-full h-full object-cover transform hover:scale-105 transition-transform"
+              />
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Trending Collection Table */}
-      <div className="bg-white rounded-xl shadow p-6">
+      <div className="bg-white rounded-xl shadow p-4 sm:p-6">
         <h3 className="text-xl font-semibold mb-4">Trending Collection</h3>
         <div className="overflow-x-auto">
-          <table className="min-w-full text-left">
+          <table className="min-w-full text-left whitespace-nowrap">
             <thead>
               <tr className="border-b">
                 <th className="px-4 py-2">Name</th>
                 <th className="px-4 py-2">Floor</th>
                 <th className="px-4 py-2">24h Volume</th>
                 <th className="px-4 py-2">Total Volume</th>
-                <th className="px-4 py-2">Owners</th>
-                <th className="px-4 py-2">Supply</th>
+                <th className="px-4 py-2 hidden sm:table-cell">Owners</th>
+                <th className="px-4 py-2 hidden lg:table-cell">Supply</th>
               </tr>
             </thead>
             <tbody>
               {trendingCollections.map((col, idx) => (
                 <tr key={idx} className="border-b hover:bg-gray-50">
                   <td className="px-4 py-3 flex items-center space-x-3">
-                    <img src={col.avatar} alt={col.name} className="w-8 h-8 rounded-full" />
+                    <img src={col.avatar} className="w-8 h-8 rounded-full" />
                     <span className="font-medium">{col.name}</span>
                   </td>
-                  <td className="px-4 py-3">
-                    <div>{col.floor}</div>
-                    <div className="text-sm text-green-500">{col.floorChange}</div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div>{col.volume24}</div>
-                    <div className="text-sm text-green-500">{col.volume24Change}</div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div>{col.totalVolume}</div>
-                    <div className={`text-sm ${col.totalVolumeChange.startsWith('-') ? 'text-red-500' : 'text-green-500'}`}>
-                      {col.totalVolumeChange}
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">{col.owners.toLocaleString()}</td>
-                  <td className="px-4 py-3">{col.supply.toLocaleString()}</td>
+                  <td className="px-4 py-3">{col.floor} <div className="text-sm text-green-500">{col.floorChange}</div></td>
+                  <td className="px-4 py-3">{col.volume24} <div className="text-sm text-green-500">{col.volume24Change}</div></td>
+                  <td className="px-4 py-3">{col.totalVolume} <div className={`text-sm ${col.totalVolumeChange.startsWith('-') ? 'text-red-500' : 'text-green-500'}`}>{col.totalVolumeChange}</div></td>
+                  <td className="px-4 py-3 hidden sm:table-cell">{col.owners.toLocaleString()}</td>
+                  <td className="px-4 py-3 hidden lg:table-cell">{col.supply.toLocaleString()}</td>
                 </tr>
               ))}
             </tbody>
