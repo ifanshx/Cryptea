@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 
 const carouselImages = [
   {
-    name: 'Steamland',
+    name: 'Seals',
     image: '/images/banner1.png',
     status: 'live',
     button: 'Mint Collection',
@@ -58,6 +58,8 @@ const trendingCollections = [
 ];
 
 
+
+
 const MintPopup = ({ slide, onClose }: { slide: typeof carouselImages[0]; onClose: () => void }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
@@ -74,11 +76,12 @@ const MintPopup = ({ slide, onClose }: { slide: typeof carouselImages[0]; onClos
 
         {/* Header */}
         <div className="pt-6 sm:pt-8 px-4 sm:px-6 text-center">
-          <h1 className="text-white/90 text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 [font-family:'McLaren-Regular']">
-            {slide.name} Checkout
+          <h1 className="flex flex-col text-white/90 text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 [font-family:'McLaren-Regular']">
+            {slide.name} <span>Checkout</span>
           </h1>
           <p className="text-white/70 text-xs sm:text-sm mb-4 sm:mb-6">
-            Price per item: <span className="font-semibold text-white/90">{slide.price}</span>
+            Expand your digital collection with a tea!
+
           </p>
         </div>
 
