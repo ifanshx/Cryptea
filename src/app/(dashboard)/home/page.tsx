@@ -1,9 +1,19 @@
 'use client';
 import MintPopup from '@/components/MintPopup';
 import { useCarousel } from '@/hooks/useCarousel';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-const carouselImages = [
+
+interface CarouselSlide {
+  name: string;
+  image: string;
+  status: 'Live' | 'Finish' | 'Live Generate';
+  button: string;
+  openseaSlug: string;
+  price: string;
+}
+
+const carouselImages: CarouselSlide[] = [
   {
     name: 'Seals',
     image: '/images/banner1.png',
@@ -61,10 +71,19 @@ const trendingCollections = [
 
 
 
+
+
+
 export default function HomePage() {
   const { activeIndex, goToSlide, setIsAutoPlay } = useCarousel(carouselImages.length);
   const [showMintPopup, setShowMintPopup] = useState(false);
   const currentSlide = carouselImages[activeIndex];
+
+  useEffect(() => {
+    if (activeIndex >= carouselImages.length) {
+      goToSlide(0);
+    }
+  }, [activeIndex]);
 
   const handleOpenMint = () => {
     setIsAutoPlay(false); // stop autoplay
@@ -86,7 +105,7 @@ export default function HomePage() {
         <div className="relative h-48 sm:h-64 md:h-80 lg:h-96 transition-all duration-500">
           <img
             src={currentSlide.image}
-            alt={currentSlide.name}
+            alt={`${currentSlide.name} collection banner`}
             className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900 opacity-40" />
@@ -123,12 +142,11 @@ export default function HomePage() {
             </button>
           ) : (
             <button
-              onClick={() =>
-                window.open(
-                  `https://opensea.io/collection/${currentSlide.openseaSlug}`,
-                  '_blank'
-                )
-              }
+              onClick={() => window.open(
+                `https://opensea.io/collection/${currentSlide.openseaSlug}`,
+                '_blank',
+                'noopener,noreferrer'
+              )}
               className="absolute bottom-6 right-8 bg-white/20 text-white px-4 md:px-5 py-2 rounded-full hover:bg-white/30 transition-colors shadow-md text-sm md:text-base"
             >
               {currentSlide.button}

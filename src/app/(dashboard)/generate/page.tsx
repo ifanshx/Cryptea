@@ -234,7 +234,7 @@ export default function GenerateImagePage() {
             <p className="text-sm text-gray-500 mb-1">Mint Progress</p>
             <div className="w-full bg-gray-100 rounded-full h-2 mb-2">
               <div
-                className="bg-blue-400 h-2 rounded-full transition-all duration-500"
+                className="bg-gradient-to-r from-blue-400 to-purple-500 h-2 rounded-full transition-all duration-500"
                 style={{
                   width: `${(Number(totalSupply) /
                     Number(maxSupply || 1)) *
@@ -244,7 +244,7 @@ export default function GenerateImagePage() {
             </div>
             <p className="text-lg font-semibold text-gray-800">
               {totalSupply || 0}
-              <span className="text-sm text-gray-500">/{maxSupply} minted</span>
+              <span className="text-sm text-gray-500">/{maxSupply}</span>
             </p>
           </div>
 
