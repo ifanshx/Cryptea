@@ -3,10 +3,29 @@ import { useCarousel } from '@/hooks/useCarousel';
 import { SparklesIcon } from '@heroicons/react/24/outline';
 import React, { useState } from 'react';
 
+
 const carouselImages = [
-  '/images/banner1.png',
-  '/images/banner2.png',
-  '/images/banner3.png',
+  {
+    name: 'Steamland',
+    image: '/images/banner1.png',
+    status: 'live',
+    button: 'Mint Collection',
+    openseaSlug: 'steamland'
+  },
+  {
+    name: 'Tea in The House',
+    image: '/images/banner2.png',
+    status: 'finish',
+    button: 'Market',
+    openseaSlug: 'tea-in-the-house'
+  },
+  {
+    name: 'Pink is Love',
+    image: '/images/banner3.png',
+    status: 'live',
+    button: 'Mint Collection',
+    openseaSlug: 'pink-is-love'
+  }
 ];
 
 const trendingCollections = [
@@ -43,29 +62,59 @@ export default function HomePage() {
   const handleOpenMint = () => setShowMintPopup(true);
   const handleCloseMint = () => setShowMintPopup(false);
   return (
-    <div className="space-y-8 px-4 lg:px-10 py-6 bg-gray-50 text-gray-800">
+    <div className="space-y-8 container mx-auto px-4 py-12 max-w-7xl bg-gray-50 text-gray-800">
       {/* Main Carousel */}
       <div className="relative rounded-xl overflow-hidden group shadow-lg">
         <div className="relative h-48 sm:h-64 md:h-80 lg:h-96 transition-all duration-500">
+          {/* Gambar slide */}
           <img
-            src={carouselImages[activeIndex]}
+            src={carouselImages[activeIndex].image}
+            alt={carouselImages[activeIndex].name}
             className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-900 opacity-40" />
 
-          {/* Slide Info */}
+          {/* Slide Info (dinamis) */}
           <div className="absolute bottom-6 left-8">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-white drop-shadow-lg">SEALS</h2>
-            <span className="inline-block mt-2 bg-white/20 text-white rounded-full px-3 md:px-4 py-1 text-sm md:text-base font-medium">Live</span>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-white drop-shadow-lg">
+              {carouselImages[activeIndex].name}
+            </h2>
+            <span
+              className={`
+          inline-block mt-2 rounded-full px-3 md:px-4 py-1 text-sm md:text-base font-medium
+          ${carouselImages[activeIndex].status === 'live'
+                  ? 'bg-green-500/30 text-green-200'
+                  : 'bg-gray-500/30 text-gray-200'}
+        `}
+            >
+              {carouselImages[activeIndex].status === 'live' ? 'Live' : 'Finished'}
+            </span>
           </div>
-          <button
-            onClick={handleOpenMint}
 
-            className="absolute cursor-pointer bottom-6 right-8 bg-white/20 text-white px-4 md:px-5 py-2 rounded-full hover:bg-white/30 transition-colors shadow-md text-sm md:text-base">
-            Mint Collection
-          </button>
+          {/* Button aksi dinamis */}
+          {carouselImages[activeIndex].status === 'live' ? (
+            <button
+              onClick={handleOpenMint}
+              className="absolute bottom-6 right-8 bg-white/20 text-white px-4 md:px-5 py-2 rounded-full hover:bg-white/30 transition-colors shadow-md text-sm md:text-base"
+            >
+              {carouselImages[activeIndex].button}
+            </button>
+          ) : (
+            <button
+              onClick={() =>
+                window.open(
+                  `https://opensea.io/collection/${carouselImages[activeIndex].openseaSlug}`,
+                  '_blank'
+                )
+              }
+              className="absolute bottom-6 right-8 bg-white/20 text-white px-4 md:px-5 py-2 rounded-full hover:bg-white/30 transition-colors shadow-md text-sm md:text-base"
+            >
+              {carouselImages[activeIndex].button}
+            </button>
+          )}
         </div>
       </div>
+
 
       {/* Mint Popup */}
       {showMintPopup && (
@@ -181,8 +230,7 @@ export default function HomePage() {
                 ${idx === activeIndex ? 'bg-white/20' : 'border-transparent'}
               `}
             >
-              <img
-                src={src}
+              <img src={src.image} alt={src.name}
                 className="w-full h-full object-cover transform hover:scale-105 transition-transform"
               />
             </button>

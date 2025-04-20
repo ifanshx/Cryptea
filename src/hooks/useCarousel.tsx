@@ -1,37 +1,66 @@
 // hooks/useCarousel.ts
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
-export function useCarousel(length: number, autoPlayInterval = 5000) {
+/**
+ * Custom hook for carousel behavior with autoplay and manual controls.
+ * @param length Total number of slides.
+ * @param autoPlayInterval Interval between auto slides (ms).
+ * @param pauseDurationAfterManual Duration to pause autoplay after manual interaction (ms).
+ */
+export function useCarousel(
+    length: number,
+    autoPlayInterval = 5000,
+    pauseDurationAfterManual = 10000
+) {
     const [activeIndex, setActiveIndex] = useState(0);
     const [isAutoPlay, setIsAutoPlay] = useState(true);
+    const pauseTimeout = useRef<NodeJS.Timeout | null>(null);
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
+    // Autoplay effect
     useEffect(() => {
         if (!isAutoPlay) return;
-
-        const timer = setInterval(() => {
+        // Start autoplay interval
+        intervalRef.current = setInterval(() => {
             setActiveIndex(prev => (prev + 1) % length);
         }, autoPlayInterval);
 
-        return () => clearInterval(timer);
-    }, [isAutoPlay, activeIndex, length, autoPlayInterval]);
+        // Cleanup on change or unmount
+        return () => {
+            if (intervalRef.current) clearInterval(intervalRef.current);
+        };
+    }, [isAutoPlay, length, autoPlayInterval]);
 
-    const goToSlide = (index: number) => {
-        setActiveIndex(index);
+    // Pause autoplay for a specified duration after manual interaction
+    const pauseAutoPlay = () => {
         setIsAutoPlay(false);
-        setTimeout(() => setIsAutoPlay(true), 10000);
+        if (pauseTimeout.current) clearTimeout(pauseTimeout.current);
+        pauseTimeout.current = setTimeout(() => {
+            setIsAutoPlay(true);
+        }, pauseDurationAfterManual);
+    };
+
+    // Manual controls
+    const goToSlide = (index: number) => {
+        setActiveIndex(index % length);
+        pauseAutoPlay();
     };
 
     const nextSlide = () => {
         setActiveIndex(prev => (prev + 1) % length);
-        setIsAutoPlay(false);
-        setTimeout(() => setIsAutoPlay(true), 10000);
+        pauseAutoPlay();
     };
 
     const prevSlide = () => {
         setActiveIndex(prev => (prev - 1 + length) % length);
-        setIsAutoPlay(false);
-        setTimeout(() => setIsAutoPlay(true), 10000);
+        pauseAutoPlay();
     };
+
+    // Cleanup on component unmount
+    useEffect(() => () => {
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        if (pauseTimeout.current) clearTimeout(pauseTimeout.current);
+    }, []);
 
     return { activeIndex, goToSlide, nextSlide, prevSlide };
 }
