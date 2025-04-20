@@ -6,6 +6,7 @@ import {
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import HomeConnect from "./HomeConnect";
+import { useAccount, useBalance } from "wagmi";
 
 export default function Header({
   onMenuToggle,
@@ -16,7 +17,12 @@ export default function Header({
   isMobile?: boolean;
   sidebarOpen?: boolean;
 }) {
+  const { address } = useAccount();
 
+  // Get native token balance
+  const { data: balanceData } = useBalance({
+    address: address,
+  });
 
 
   return (
@@ -55,11 +61,14 @@ export default function Header({
             </div>
             <div className="flex space-x-2">
               <span className="px-3 py-1 rounded-full bg-gray-100 text-sm">
-                <span className="font-medium">24.00</span> CTEA
+                <span className="font-medium">$0.00</span> CTEA
               </span>
+              <span className="text-white/30">|</span>
               <span className="px-3 py-1 rounded-full bg-gray-100 text-sm">
-                <span className="font-medium">222.00</span> TEA
+                <span className="font-medium"> ${balanceData?.formatted.slice(0, 5) || "0.00"}
+                </span> TEA
               </span>
+              <span className="text-white/30">|</span>
             </div>
           </div>
 
