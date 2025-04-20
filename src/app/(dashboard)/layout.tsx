@@ -23,7 +23,7 @@ export default function DashboardLayout({
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-white/40 flex">
+    <div className="min-h-screen bg-gray-50 text-gray-800 font-sans">
       <Sidebar
         isOpen={sidebarOpen}
         isMobile={isMobile}
@@ -39,11 +39,11 @@ export default function DashboardLayout({
         />
 
         <main
-          className="flex-1 transition-all duration-300"
+          className="flex-1 transition-all duration-300 bg-white shadow-inner"
           style={{ marginLeft: isMobile ? 0 : sidebarOpen ? 250 : 80 }}
         >
           <Suspense fallback={<Loading />}>
-            <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div className="px-6 py-8">
               {children}
             </div>
           </Suspense>

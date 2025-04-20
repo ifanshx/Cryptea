@@ -16,6 +16,7 @@ const Items = [
   // { name: "Gallery", path: "/gallery", icon: PhotoIcon },
 ];
 
+
 export default function Sidebar({
   isOpen,
   isMobile,
@@ -27,6 +28,12 @@ export default function Sidebar({
   onHover: (open: boolean) => void;
   onClose: () => void;
 }) {
+
+  const handleLinkClick = () => {
+    if (isMobile) {
+      onClose();
+    }
+  };
   return (
     <>
       {isMobile && isOpen && (
@@ -47,8 +54,8 @@ export default function Sidebar({
           }
           ${isMobile ? "w-64" : isOpen ? "w-64" : "w-20"}
         `}
-        onMouseEnter={() => onHover(true)}
-        onMouseLeave={() => onHover(false)}
+        onMouseEnter={() => !isMobile && onHover(true)}
+        onMouseLeave={() => !isMobile && onHover(false)}
       >
         {/* Logo Section */}
         <div className="flex items-center justify-center p-4 border-b border-gray-200">
@@ -71,6 +78,7 @@ export default function Sidebar({
               <Link
                 key={idx}
                 href={item.path}
+                onClick={handleLinkClick}
                 className="flex items-center p-3 rounded-lg hover:bg-gray-100 transition-colors"
               >
                 <item.icon className="h-6 w-6 text-gray-600" />
