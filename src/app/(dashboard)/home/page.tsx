@@ -7,7 +7,7 @@ const carouselImages = [
   {
     name: 'Seals',
     image: '/images/banner1.png',
-    status: 'live',
+    status: 'Live',
     button: 'Mint Collection',
     openseaSlug: 'steamland',
     price: '0.1 TEA',
@@ -15,7 +15,7 @@ const carouselImages = [
   {
     name: 'Tea in The House',
     image: '/images/banner2.png',
-    status: 'finish',
+    status: 'Finish',
     button: 'Market',
     openseaSlug: 'tea-in-the-house',
     price: '0.2 TEA',
@@ -23,7 +23,7 @@ const carouselImages = [
   {
     name: 'Pink is Love',
     image: '/images/banner3.png',
-    status: 'live',
+    status: 'Live Generate',
     button: 'Mint Collection',
     openseaSlug: 'pink-is-love',
     price: '0.15 TEA',
@@ -76,6 +76,9 @@ export default function HomePage() {
     setIsAutoPlay(true); // resume autoplay
   };
 
+  const statusLower = currentSlide.status.toLowerCase();
+
+
   return (
     <div className="space-y-8 container mx-auto px-4 py-12 max-w-7xl bg-gray-50 text-gray-800">
       {/* Main Carousel */}
@@ -94,19 +97,26 @@ export default function HomePage() {
             <span
               className={
                 `inline-block mt-2 rounded-full px-3 md:px-4 py-1 text-sm md:text-base font-medium ` +
-                (currentSlide.status === 'live'
+                (statusLower.includes('live')
                   ? 'bg-green-500/30 text-green-200'
                   : 'bg-gray-500/30 text-gray-200')
               }
             >
-              {currentSlide.status === 'live' ? 'Live' : 'Finished'}
+              {currentSlide.status}
             </span>
           </div>
 
           {/* Action Button */}
-          {currentSlide.status === 'live' ? (
+          {statusLower === 'live' ? (
             <button
               onClick={handleOpenMint}
+              className="absolute bottom-6 right-8 bg-white/20 text-white px-4 md:px-5 py-2 rounded-full hover:bg-white/30 transition-colors shadow-md text-sm md:text-base"
+            >
+              {currentSlide.button}
+            </button>
+          ) : statusLower === 'live generate' ? (
+            <button
+              onClick={() => window.location.href = '/generate'} // atau router.push('/market')
               className="absolute bottom-6 right-8 bg-white/20 text-white px-4 md:px-5 py-2 rounded-full hover:bg-white/30 transition-colors shadow-md text-sm md:text-base"
             >
               {currentSlide.button}
@@ -114,7 +124,10 @@ export default function HomePage() {
           ) : (
             <button
               onClick={() =>
-                window.open(`https://opensea.io/collection/${currentSlide.openseaSlug}`, '_blank')
+                window.open(
+                  `https://opensea.io/collection/${currentSlide.openseaSlug}`,
+                  '_blank'
+                )
               }
               className="absolute bottom-6 right-8 bg-white/20 text-white px-4 md:px-5 py-2 rounded-full hover:bg-white/30 transition-colors shadow-md text-sm md:text-base"
             >
@@ -123,7 +136,6 @@ export default function HomePage() {
           )}
         </div>
       </div>
-
       {/* Mint Popup */}
       {showMintPopup && <MintPopup slide={currentSlide} onClose={handleCloseMint} />}
 
