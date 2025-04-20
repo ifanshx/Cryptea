@@ -1,41 +1,24 @@
 'use client';
-import { useCarousel } from '@/hooks/useCarousel';
 import { SparklesIcon } from '@heroicons/react/24/outline';
-import React, { useState } from 'react';
+import React from 'react';
 
-const carouselImages = [
-    {
-        name: 'Steamland',
-        image: '/images/banner1.png',
-        status: 'live',
-        button: 'Mint Collection',
-        openseaSlug: 'steamland',
-        price: '0.1 TEA',
-    },
-    {
-        name: 'Tea in The House',
-        image: '/images/banner2.png',
-        status: 'finish',
-        button: 'Market',
-        openseaSlug: 'tea-in-the-house',
-        price: '0.2 TEA',
-    },
-    {
-        name: 'Pink is Love',
-        image: '/images/banner3.png',
-        status: 'live',
-        button: 'Mint Collection',
-        openseaSlug: 'pink-is-love',
-        price: '0.15 TEA',
-    }
-];
+interface MintPopupProps {
+    slide: {
+        name: string;
+        image: string;
+        status: string;
+        button: string;
+        openseaSlug: string;
+        price: string
+    };
+    onClose: () => void;
+}
 
-const MintPopup = ({ slide, onClose }: { slide: typeof carouselImages[0]; onClose: () => void }) => {
+export default function MintPopup({ slide, onClose }: MintPopupProps) {
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
             <div
-                style={{ backgroundImage: "url('/backgroundhome.png')" }}
-                className="backdrop-blur-lg bg-cover bg-center bg-no-repeat rounded-2xl border border-white/20 shadow-2xl max-w-md w-full animate-fade-in relative mx-2 sm:mx-4"
+                className="backdrop-blur-lg bg-black/30 bg-cover bg-center bg-no-repeat rounded-2xl border border-white/20 shadow-2xl max-w-md w-full animate-fade-in relative mx-2 sm:mx-4"
             >
                 {/* Close Button */}
                 <button
@@ -47,11 +30,11 @@ const MintPopup = ({ slide, onClose }: { slide: typeof carouselImages[0]; onClos
 
                 {/* Header */}
                 <div className="pt-6 sm:pt-8 px-4 sm:px-6 text-center">
-                    <h1 className="text-white/90 text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 [font-family:'McLaren-Regular']">
-                        {slide.name} Checkout
+                    <h1 className="flex flex-col text-white/90 text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 [font-family:'McLaren-Regular']">
+                        {slide.name} <span>Checkout</span>
                     </h1>
                     <p className="text-white/70 text-xs sm:text-sm mb-4 sm:mb-6">
-                        Price per item: <span className="font-semibold text-white/90">{slide.price}</span>
+                        Expand your digital collection with a tea!
                     </p>
                 </div>
 
@@ -123,4 +106,4 @@ const MintPopup = ({ slide, onClose }: { slide: typeof carouselImages[0]; onClos
             </div>
         </div>
     );
-};
+}
