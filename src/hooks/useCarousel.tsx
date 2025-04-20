@@ -62,5 +62,5 @@ export function useCarousel(
         if (pauseTimeout.current) clearTimeout(pauseTimeout.current);
     }, []);
 
-    return { activeIndex, goToSlide, nextSlide, prevSlide };
+    return { activeIndex, goToSlide, nextSlide, prevSlide, setIsAutoPlay };
 }
