@@ -10,29 +10,28 @@ import { useState, useEffect, useRef } from 'react';
 export function useCarousel(
     length: number,
     autoPlayInterval = 5000,
-    pauseDurationAfterManual = 10000
+    pauseDurationAfterManual = 10000,
+    externallyPaused = false // Tambahkan parameter ini
 ) {
     const [activeIndex, setActiveIndex] = useState(0);
     const [isAutoPlay, setIsAutoPlay] = useState(true);
     const pauseTimeout = useRef<NodeJS.Timeout | null>(null);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-    // Autoplay effect
     useEffect(() => {
-        if (!isAutoPlay) return;
-        // Start autoplay interval
+        if (!isAutoPlay || externallyPaused) return; // Tambahkan pengecekan externallyPaused
+
         intervalRef.current = setInterval(() => {
             setActiveIndex(prev => (prev + 1) % length);
         }, autoPlayInterval);
 
-        // Cleanup on change or unmount
         return () => {
             if (intervalRef.current) clearInterval(intervalRef.current);
         };
-    }, [isAutoPlay, length, autoPlayInterval]);
+    }, [isAutoPlay, externallyPaused, length, autoPlayInterval]);
 
-    // Pause autoplay for a specified duration after manual interaction
     const pauseAutoPlay = () => {
+        if (externallyPaused) return; // skip pausing if external pause is on
         setIsAutoPlay(false);
         if (pauseTimeout.current) clearTimeout(pauseTimeout.current);
         pauseTimeout.current = setTimeout(() => {
@@ -40,7 +39,6 @@ export function useCarousel(
         }, pauseDurationAfterManual);
     };
 
-    // Manual controls
     const goToSlide = (index: number) => {
         setActiveIndex(index % length);
         pauseAutoPlay();
@@ -56,7 +54,6 @@ export function useCarousel(
         pauseAutoPlay();
     };
 
-    // Cleanup on component unmount
     useEffect(() => () => {
         if (intervalRef.current) clearInterval(intervalRef.current);
         if (pauseTimeout.current) clearTimeout(pauseTimeout.current);

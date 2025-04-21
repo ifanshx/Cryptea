@@ -1,109 +1,255 @@
+
+
 'use client';
+import React, { useState, useCallback } from 'react';
 import { SparklesIcon } from '@heroicons/react/24/outline';
-import React from 'react';
+
+enum Status {
+    LIVE = 'Live',
+    FINISH = 'Finish',
+    LIVE_GENERATE = 'Live Generate'
+}
+
+interface CarouselSlide {
+    name: string;
+    image: string;
+    status: Status;
+    button: string;
+    openseaSlug: string;
+    price: string;
+}
 
 interface MintPopupProps {
-    slide: {
-        name: string;
-        image: string;
-        status: string;
-        button: string;
-        openseaSlug: string;
-        price: string
-    };
+    slide: CarouselSlide;
     onClose: () => void;
 }
 
-export default function MintPopup({ slide, onClose }: MintPopupProps) {
+const TX_EXPLORER_URL = 'https://sepolia.tea.xyz/tx';
+const POWERED_BY_TEXT = 'Powered by tea.xyz';
+const TEA_USD_PRICE = 11.5; // Hardcoded, bisa diganti dengan API call
+
+const MintPopup = ({ slide, onClose }: MintPopupProps) => {
+    const [minted, setMinted] = useState(false);
+    const [txUrl, setTxUrl] = useState('');
+    const [error, setError] = useState('');
+    const [quantity, setQuantity] = useState(1);
+
+    // Price calculations
+    const pricePerItem = parseFloat(slide.price.replace(/[^0-9.]/g, ''));
+    const platformFee = 0.002;
+    const subTotal = pricePerItem * quantity;
+    const totalPrice = subTotal + platformFee;
+    const usdEquivalent = (totalPrice * TEA_USD_PRICE).toFixed(2);
+
+    const handleQuantityChange = (operation: 'increment' | 'decrement') => {
+        setQuantity(prev => {
+            if (operation === 'decrement' && prev > 1) return prev - 1;
+            if (operation === 'increment') return prev + 1;
+            return prev;
+        });
+    };
+
+    const handleMint = useCallback(async () => {
+        try {
+            setError('');
+
+            // Simulasi mint dengan quantity
+            const fakeTxHash = `0x${Math.random().toString(16).slice(2)}?quantity=${quantity}`;
+            setTxUrl(`${TX_EXPLORER_URL}/${fakeTxHash}`);
+            setMinted(true);
+
+        } catch (err) {
+            setError('Mint failed. Please try again.');
+            console.error('Mint error:', err);
+        }
+    }, [quantity]);
+
+    const handleShare = useCallback(() => {
+        const tweetText = encodeURIComponent(
+            `🎉 Baru saja mint ${quantity} NFT "${slide.name}"!\n` +
+            `🔗 TX: ${txUrl}\n` +
+            `🌐 Tersedia di OpenSea: https://opensea.io/collection/${slide.openseaSlug}/\n\n` +
+            `#NFT #Web3 #TEAxyz`
+        );
+
+        window.open(
+            `https://twitter.com/intent/tweet?text=${tweetText}`,
+            '_blank',
+            'width=550,height=420'
+        );
+    }, [txUrl, slide.name, slide.openseaSlug, quantity]);
+
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
-            <div
-                className="backdrop-blur-lg bg-black/30 bg-cover bg-center bg-no-repeat rounded-2xl border border-white/20 shadow-2xl max-w-md w-full animate-fade-in relative mx-2 sm:mx-4"
-            >
+        <div className="fixed inset-0 z-50 flex items-center justify-center  space-y-3">
+            <div className="w-full max-w-sm mx-auto bg-black/30 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl animate-fade-in relative">
+
                 {/* Close Button */}
                 <button
                     onClick={onClose}
-                    className="absolute top-3 right-3 sm:top-4 sm:right-4 text-white/90 hover:text-white transition-colors text-xl sm:text-2xl"
+                    className="absolute top-2 right-2 sm:top-3 sm:right-3 text-white/80 hover:text-white text-lg sm:text-xl"
+                    aria-label="Close mint popup"
                 >
                     ✕
                 </button>
 
-                {/* Header */}
-                <div className="pt-6 sm:pt-8 px-4 sm:px-6 text-center">
-                    <h1 className="flex flex-col text-white/90 text-2xl sm:text-3xl font-bold mb-1 sm:mb-2 [font-family:'McLaren-Regular']">
-                        {slide.name} <span>Checkout</span>
-                    </h1>
-                    <p className="text-white/70 text-xs sm:text-sm mb-4 sm:mb-6">
-                        Expand your digital collection with a tea!
-                    </p>
-                </div>
+                {minted ? (
+                    <div className="flex flex-col items-center text-center p-4 sm:p-6 space-y-3">
+                        <h1 className="text-white text-xl sm:text-2xl font-bold">Congrats</h1>
+                        <p className="text-white/80 text-xs sm:text-sm">Minted {quantity} NFT{quantity > 1 && 's'}</p>
 
-                {/* Content */}
-                <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4 sm:space-y-6">
-                    {/* Balance */}
-                    <div className="bg-white/10 p-3 sm:p-4 rounded-xl backdrop-blur-sm">
-                        <div className="flex justify-between items-center">
-                            <span className="text-white/70 text-sm sm:text-base">Your Balance:</span>
-                            <span className="text-white/90 font-bold text-sm sm:text-base">12.45 TEA</span>
+                        <div className="w-full aspect-square rounded-xl overflow-hidden">
+                            <img
+                                src={slide.image}
+                                alt="Minted NFT"
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                            />
+                        </div>
+
+                        <button
+                            onClick={() => setMinted(false)}
+                            className="w-full bg-gradient-to-r from-blue-400/90 to-purple-400/90 hover:from-blue-500/90 hover:to-purple-500/90 text-white font-bold py-2 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 backdrop-blur-sm"
+                        >
+                            Mint Again
+                        </button>
+
+                        <div className="text-white/70 text-xs sm:text-sm flex flex-wrap justify-center gap-2 mt-1">
+                            {txUrl && (
+                                <a
+                                    href={txUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="hover:underline"
+                                >
+                                    View TX
+                                </a>
+                            )}
+                            <span>|</span>
+                            <button onClick={handleShare} className="hover:underline">
+                                Share NFT
+                            </button>
+                            <span>|</span>
+                            <button
+                                onClick={() => window.open(
+                                    `https://opensea.io/collection/${slide.openseaSlug}/`,
+                                    '_blank'
+                                )}
+                                className="hover:underline"
+                            >
+                                Trade
+                            </button>
                         </div>
                     </div>
+                ) : (
+                    <>
+                        <div className="pt-6 px-5 text-center space-y-3">
 
-                    {/* Price & Quantity */}
-                    <div className="space-y-3 sm:space-y-4">
-                        <div className="flex justify-between items-center">
-                            <span className="text-white/70 text-sm sm:text-base">Price per item</span>
-                            <span className="text-white/90 font-bold text-sm sm:text-base">{slide.price}</span>
+                            <h1 className="text-white text-xl sm:text-2xl font-bold">
+                                Checkout  {slide.name}
+                            </h1>
+
+
+
+                            <p className="text-white/70 text-xs mb-4">
+                                Expand your digital collection with a tea!
+                            </p>
                         </div>
+                        <div className="px-3 sm:px-5 pb-3 sm:pb-5 space-y-4">
+                            {error && (
+                                <div className="text-red-400 text-xs p-2 bg-red-900/20 rounded-lg">
+                                    ⚠️ {error}
+                                </div>
+                            )}
 
-                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                            <span className="text-white/70 text-sm sm:text-base">Quantity</span>
-                            <div className="flex items-center gap-3 bg-white/10 rounded-full px-3 sm:px-4 py-1.5 sm:py-2 backdrop-blur-sm">
-                                <button className="text-white/90 hover:text-white text-base sm:text-lg">-</button>
-                                <span className="text-white/90 font-bold mx-1 sm:mx-2 text-sm sm:text-base">1</span>
-                                <button className="text-white/90 hover:text-white text-base sm:text-lg">+</button>
+                            {/* Balance */}
+                            <div className="bg-white/10 p-2 sm:p-3 rounded-xl backdrop-blur-sm">
+                                <div className="flex justify-between items-center text-xs sm:text-sm">
+                                    <span className="text-white/70">Your Balance:</span>
+                                    <span className="text-white/90 font-bold">12.45 TEA</span>
+                                </div>
+                            </div>
+
+                            {/* Price */}
+                            <div className="flex justify-between items-center text-xs sm:text-sm">
+                                <span className="text-white/70">Price per item</span>
+                                <span className="text-white/90 font-bold">{slide.price}</span>
+                            </div>
+
+                            {/* Quantity */}
+                            <div className="flex justify-between items-center text-xs sm:text-sm">
+                                <span className="text-white/70">Quantity</span>
+                                <div className="flex items-center gap-2 bg-white/10 rounded-full px-2 sm:px-3 py-1 backdrop-blur-sm">
+                                    <button
+                                        onClick={() => handleQuantityChange('decrement')}
+                                        className={`text-white/90 hover:text-white text-sm ${quantity === 1 ? 'opacity-50 cursor-not-allowed' : ''
+                                            }`}
+                                        disabled={quantity === 1}
+                                    >
+                                        -
+                                    </button>
+                                    <span className="text-white/90 font-bold mx-1 text-sm">
+                                        {quantity}
+                                    </span>
+                                    <button
+                                        onClick={() => handleQuantityChange('increment')}
+                                        className="text-white/90 hover:text-white text-sm"
+                                    >
+                                        +
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Fees */}
+                            <div className="bg-white/10 p-2 sm:p-3 rounded-lg space-y-1 backdrop-blur-sm text-xs sm:text-sm">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-white/70">Platform & Gas Fee</span>
+                                    <span className="text-white/90">0.002 TEA</span>
+                                </div>
+                            </div>
+
+                            {/* Total */}
+                            <div className="flex justify-between items-center pt-2 sm:pt-3 border-t border-white/20 text-xs sm:text-sm">
+                                <span className="text-white/70">You will pay</span>
+                                <div className="text-right">
+                                    <div className="text-white/90 font-bold text-sm sm:text-base">
+                                        {totalPrice.toFixed(3)} TEA
+                                    </div>
+                                    <div className="text-white/70 text-xs sm:text-sm">
+                                        ≈ ${usdEquivalent}
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            {/* Mint Button */}
+                            <button
+                                onClick={handleMint}
+                                className="w-full bg-gradient-to-r from-blue-400/90 to-purple-400/90 hover:from-blue-500/90 hover:to-purple-500/90 text-white font-bold py-2 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 backdrop-blur-sm"
+                            >
+                                <SparklesIcon className="w-4 h-4" />
+                                <span className="text-sm">Mint {quantity} NFT{quantity > 1 && 's'}</span>
+                            </button>
+
+                            {/* Progress Bar */}
+                            <div className="h-1.5 bg-white/10 rounded-full overflow-hidden backdrop-blur-sm">
+                                <div
+                                    className="h-full bg-blue-400/90 transition-all duration-300"
+                                    style={{ width: '42%' }}
+                                />
                             </div>
                         </div>
-                    </div>
-
-                    {/* Fees */}
-                    <div className="bg-white/10 p-3 sm:p-4 rounded-xl space-y-1 sm:space-y-2 backdrop-blur-sm">
-                        <div className="flex justify-between items-center">
-                            <span className="text-white/70 text-sm sm:text-base">Platform & Gas Fee</span>
-                            <span className="text-white/90 text-sm sm:text-base">0.002 TEA</span>
-                        </div>
-                    </div>
-
-                    {/* Total */}
-                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center pt-3 sm:pt-4 border-t border-white/20 gap-2">
-                        <span className="text-white/70 text-base sm:text-lg">You will pay</span>
-                        <div className="text-right">
-                            <div className="text-white/90 font-bold text-lg sm:text-xl">0.107 TEA</div>
-                            <div className="text-white/70 text-xs sm:text-sm">≈ $1.23</div>
-                        </div>
-                    </div>
-
-                    {/* Progress Bar */}
-                    <div className="h-2 bg-white/10 rounded-full overflow-hidden backdrop-blur-sm">
-                        <div
-                            className="h-full bg-blue-400/90 transition-all duration-300"
-                            style={{ width: `42%` }}
-                        />
-                    </div>
-
-                    {/* Mint Button */}
-                    <button
-                        className="w-full bg-gradient-to-r from-blue-400/90 to-purple-400/90 hover:from-blue-500/90 hover:to-purple-500/90 text-white font-bold py-3 sm:py-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 backdrop-blur-sm"
-                    >
-                        <SparklesIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-                        <span className="text-sm sm:text-lg">Mint</span>
-                    </button>
-                </div>
+                    </>
+                )}
 
                 {/* Footer */}
-                <div className="pt-4 sm:pt-6 px-4 sm:px-6 text-center pb-4">
-                    <p className="text-white/70 text-xs sm:text-sm">Powered by tea.xyz</p>
+                <div className="pt-2 px-5 text-center pb-3 border-t border-white/10">
+                    <p className="text-white/70 text-xs">{POWERED_BY_TEXT}</p>
+
                 </div>
             </div>
         </div>
     );
-}
+};
+
+export default MintPopup;
