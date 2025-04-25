@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@heroicons/react": "^2.2.0",
     "@rainbow-me/rainbowkit": "^2.2.3",
     "@tanstack/react-query": "^5.65.0",
     "dotenv": "^16.4.7",

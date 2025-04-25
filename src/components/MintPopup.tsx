@@ -1,13 +1,12 @@
-
-
 'use client';
 import React, { useState, useCallback } from 'react';
-import { SparklesIcon } from '@heroicons/react/24/outline';
+import { Sparkles } from 'lucide-react';
 
 enum Status {
     LIVE = 'Live',
     FINISH = 'Finish',
-    LIVE_GENERATE = 'Live Generate'
+    LIVE_GENERATE = 'Live Generate',
+    COMING_SOON = 'Coming Soon'
 }
 
 interface CarouselSlide {
@@ -50,19 +49,17 @@ const MintPopup = ({ slide, onClose }: MintPopupProps) => {
     };
 
     const handleMint = useCallback(async () => {
+        if (slide.status === Status.COMING_SOON) return;
         try {
             setError('');
-
-            // Simulasi mint dengan quantity
             const fakeTxHash = `0x${Math.random().toString(16).slice(2)}?quantity=${quantity}`;
             setTxUrl(`${TX_EXPLORER_URL}/${fakeTxHash}`);
             setMinted(true);
-
         } catch (err) {
             setError('Mint failed. Please try again.');
             console.error('Mint error:', err);
         }
-    }, [quantity]);
+    }, [quantity, slide.status]);
 
     const handleShare = useCallback(() => {
         const tweetText = encodeURIComponent(
@@ -80,7 +77,7 @@ const MintPopup = ({ slide, onClose }: MintPopupProps) => {
     }, [txUrl, slide.name, slide.openseaSlug, quantity]);
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center  space-y-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="w-full max-w-sm mx-auto bg-black/30 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl animate-fade-in relative">
 
                 {/* Close Button */}
@@ -92,7 +89,27 @@ const MintPopup = ({ slide, onClose }: MintPopupProps) => {
                     ✕
                 </button>
 
-                {minted ? (
+                {slide.status === Status.COMING_SOON ? (
+                    <div className="flex flex-col items-center justify-center text-center p-6 space-y-4">
+                        <div className="w-full aspect-square rounded-xl overflow-hidden filter blur-sm">
+                            <img
+                                src={slide.image}
+                                alt="Coming Soon"
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                            />
+                        </div>
+                        <span className="text-2xl font-extrabold text-white bg-black bg-opacity-50 px-4 py-2 rounded-lg">
+                            {Status.COMING_SOON}
+                        </span>
+                        <button
+                            disabled
+                            className="w-full bg-white/20 text-white opacity-50 cursor-not-allowed font-bold py-2 rounded-xl"
+                        >
+                            {Status.COMING_SOON}
+                        </button>
+                    </div>
+                ) : minted ? (
                     <div className="flex flex-col items-center text-center p-4 sm:p-6 space-y-3">
                         <h1 className="text-white text-xl sm:text-2xl font-bold">Congrats</h1>
                         <p className="text-white/80 text-xs sm:text-sm">Minted {quantity} NFT{quantity > 1 && 's'}</p>
@@ -143,13 +160,9 @@ const MintPopup = ({ slide, onClose }: MintPopupProps) => {
                 ) : (
                     <>
                         <div className="pt-6 px-5 text-center space-y-3">
-
                             <h1 className="text-white text-xl sm:text-2xl font-bold">
-                                Checkout  {slide.name}
+                                Checkout {slide.name}
                             </h1>
-
-
-
                             <p className="text-white/70 text-xs mb-4">
                                 Expand your digital collection with a tea!
                             </p>
@@ -181,8 +194,7 @@ const MintPopup = ({ slide, onClose }: MintPopupProps) => {
                                 <div className="flex items-center gap-2 bg-white/10 rounded-full px-2 sm:px-3 py-1 backdrop-blur-sm">
                                     <button
                                         onClick={() => handleQuantityChange('decrement')}
-                                        className={`text-white/90 hover:text-white text-sm ${quantity === 1 ? 'opacity-50 cursor-not-allowed' : ''
-                                            }`}
+                                        className={`text-white/90 hover:text-white text-sm ${quantity === 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
                                         disabled={quantity === 1}
                                     >
                                         -
@@ -220,14 +232,12 @@ const MintPopup = ({ slide, onClose }: MintPopupProps) => {
                                 </div>
                             </div>
 
-
-
                             {/* Mint Button */}
                             <button
                                 onClick={handleMint}
                                 className="w-full bg-gradient-to-r from-blue-400/90 to-purple-400/90 hover:from-blue-500/90 hover:to-purple-500/90 text-white font-bold py-2 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 backdrop-blur-sm"
                             >
-                                <SparklesIcon className="w-4 h-4" />
+                                <Sparkles className="w-4 h-4" />
                                 <span className="text-sm">Mint {quantity} NFT{quantity > 1 && 's'}</span>
                             </button>
 
@@ -245,7 +255,6 @@ const MintPopup = ({ slide, onClose }: MintPopupProps) => {
                 {/* Footer */}
                 <div className="pt-2 px-5 text-center pb-3 border-t border-white/10">
                     <p className="text-white/70 text-xs">{POWERED_BY_TEXT}</p>
-
                 </div>
             </div>
         </div>

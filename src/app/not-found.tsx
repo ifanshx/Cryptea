@@ -1,7 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { ArrowLeftIcon, HomeIcon } from "@heroicons/react/24/outline";
+
+import { HomeIcon, ArrowLeftIcon } from 'lucide-react';
+
 
 export default function NotFound() {
   const router = useRouter();

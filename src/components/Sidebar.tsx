@@ -1,21 +1,14 @@
-// components/Sidebar.tsx
-"use client";
-import Link from "next/link";
-import {
-  HomeIcon,
-  LockClosedIcon,
-  SparklesIcon,
-  // PhotoIcon,
-} from "@heroicons/react/24/outline";
+'use client';
+import Link from 'next/link';
+import { ArrowLeftRight, Image, LeafIcon, PartyPopper, RocketIcon } from 'lucide-react';
 
 const Items = [
-  { name: "Home", path: "/home", icon: HomeIcon },
-  { name: "Stake", path: "/stake", icon: LockClosedIcon },
-  { name: "Generate", path: "/generate", icon: SparklesIcon },
-  // { name: "Zephyrus", path: "/zephyrus", icon: SparklesIcon },
-  // { name: "Gallery", path: "/gallery", icon: PhotoIcon },
+  { name: 'Home', path: '/home', icon: RocketIcon },
+  { name: 'Stake', path: '/stake', icon: LeafIcon },
+  { name: 'Swap', path: '/swap', icon: ArrowLeftRight },
+  { name: 'Raffle', path: '/raffle', icon: PartyPopper },
+  { name: 'Gallery', path: '/gallery', icon: Image },
 ];
-
 
 export default function Sidebar({
   isOpen,
@@ -28,12 +21,10 @@ export default function Sidebar({
   onHover: (open: boolean) => void;
   onClose: () => void;
 }) {
-
   const handleLinkClick = () => {
-    if (isMobile) {
-      onClose();
-    }
+    if (isMobile) onClose();
   };
+
   return (
     <>
       {isMobile && isOpen && (
@@ -48,11 +39,10 @@ export default function Sidebar({
           transform transition-transform duration-300
           ${isMobile
             ? isOpen
-              ? "translate-x-0"
-              : "-translate-x-full"
-            : "translate-x-0"
-          }
-          ${isMobile ? "w-64" : isOpen ? "w-64" : "w-20"}
+              ? 'translate-x-0'
+              : '-translate-x-full'
+            : 'translate-x-0'}
+          ${isMobile ? 'w-64' : isOpen ? 'w-64' : 'w-20'}
         `}
         onMouseEnter={() => !isMobile && onHover(true)}
         onMouseLeave={() => !isMobile && onHover(false)}
@@ -60,12 +50,7 @@ export default function Sidebar({
         {/* Logo Section */}
         <div className="flex items-center justify-center p-4 border-b border-gray-200">
           <Link href="/" className="flex items-center space-x-2">
-            {/* Logo Icon */}
-            <div className="bg-transparent  rounded-lg p-2">
-              🌱
-            </div>
-
-            {/* Logo Text - Hidden when collapsed */}
+            <div className="bg-transparent rounded-lg p-2">🌱</div>
             {((!isMobile && isOpen) || isMobile) && (
               <span className="text-xl font-bold text-gray-800">Cryptea</span>
             )}

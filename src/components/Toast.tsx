@@ -1,11 +1,11 @@
 "use client";
 
 import {
-  BellAlertIcon,
-  CheckCircleIcon,
-  InformationCircleIcon,
-  XCircleIcon,
-} from "@heroicons/react/24/outline";
+  Bell,
+  CheckCircle,
+  AlertCircle,
+  X,
+} from 'lucide-react';
 import { useEffect, useState, useRef, CSSProperties } from "react";
 
 interface ToastProps {
@@ -66,10 +66,10 @@ const Toast: React.FC<ToastProps> = ({
 
   // Icons for each toast type
   const icons = {
-    success: <CheckCircleIcon className="w-6 h-6" />,
-    error: <XCircleIcon className="w-6 h-6" />,
-    warning: <BellAlertIcon className="w-6 h-6" />,
-    info: <InformationCircleIcon className="w-6 h-6" />,
+    success: <CheckCircle className="w-6 h-6" />,
+    error: <X className="w-6 h-6" />,
+    warning: <Bell className="w-6 h-6" />,
+    info: <AlertCircle className="w-6 h-6" />,
   };
 
 
@@ -107,7 +107,7 @@ const Toast: React.FC<ToastProps> = ({
               className="hover:opacity-75 transition-opacity"
               aria-label="Close toast"
             >
-              <XCircleIcon className="w-5 h-5" />
+              <X className="w-5 h-5" />
             </button>
           </div>
           {/* Progress Bar */}

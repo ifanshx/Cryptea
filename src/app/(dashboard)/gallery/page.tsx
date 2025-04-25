@@ -2,11 +2,10 @@
 import React, { useEffect, useState } from "react";
 import data from "@/config/data.json";
 import rarityData from "@/config/rarity.json";
-import {
-  AdjustmentsHorizontalIcon,
-  PlusIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
+
+
+import { GripHorizontalIcon, Plus, X } from 'lucide-react';
+
 import Image from "next/image";
 
 interface NFTItem {
@@ -121,7 +120,7 @@ const GalleryPage = () => {
 
         <div className="flex flex-wrap gap-2 items-center justify-center">
           <div className="flex items-center gap-2 text-sm text-purple-600">
-            <AdjustmentsHorizontalIcon className="w-6 h-6 text-pink-500" />
+            <GripHorizontalIcon className="w-6 h-6 text-pink-500" />
             <span className="font-medium">Active Filters:</span>
           </div>
 
@@ -132,7 +131,7 @@ const GalleryPage = () => {
               className="flex items-center gap-2 bg-white/80 border-2 border-dashed border-purple-400/30 px-4 py-2 rounded-full text-sm hover:border-pink-400 transition-all group hover:scale-105 backdrop-blur-sm"
             >
               <span className="text-purple-600">✨ {trait}</span>
-              <XMarkIcon className="w-4 h-4 text-purple-400/60 group-hover:text-pink-500 transition-colors" />
+              <X className="w-4 h-4 text-purple-400/60 group-hover:text-pink-500 transition-colors" />
             </button>
           ))}
 
@@ -141,7 +140,7 @@ const GalleryPage = () => {
               onClick={handleClearFilters}
               className="text-sm text-purple-600 hover:text-pink-500 flex items-center gap-1 hover:scale-105 transition-transform"
             >
-              <XMarkIcon className="w-5 h-5 mr-1" />
+              <X className="w-5 h-5 mr-1" />
               Clear Filters
             </button>
           )}
@@ -165,10 +164,9 @@ const GalleryPage = () => {
                   <span className="text-sm font-medium text-purple-600">
                     🌿 {category}
                   </span>
-                  <PlusIcon
-                    className={`w-5 h-5 text-pink-500 transform ${
-                      openCategories[category] ? "rotate-45" : ""
-                    } transition-transform`}
+                  <Plus
+                    className={`w-5 h-5 text-pink-500 transform ${openCategories[category] ? "rotate-45" : ""
+                      } transition-transform`}
                   />
                 </button>
 
@@ -254,7 +252,7 @@ const GalleryPage = () => {
                 onClick={() => setIsOpen(false)}
                 className="p-1 md:p-2 hover:bg-purple-400/20 rounded-full transition-colors"
               >
-                <XMarkIcon className="w-5 h-5 md:w-6 md:h-6 text-purple-600" />
+                <X className="w-5 h-5 md:w-6 md:h-6 text-purple-600" />
               </button>
             </div>
 

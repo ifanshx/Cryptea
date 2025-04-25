@@ -1,10 +1,10 @@
 // components/Header.tsx
 "use client";
 
-import {
-  Bars3Icon,
-  MagnifyingGlassIcon,
-} from "@heroicons/react/24/outline";
+
+import { LogsIcon, Search } from 'lucide-react';
+
+
 import HomeConnect from "./HomeConnect";
 import { useAccount, useBalance } from "wagmi";
 
@@ -37,13 +37,13 @@ export default function Header({
               onClick={onMenuToggle}
               className="p-2 hover:bg-gray-100 rounded-lg"
             >
-              <Bars3Icon className="h-6 w-6 text-gray-600" />
+              <LogsIcon className="h-6 w-6 text-gray-600" />
             </button>
           )}
           {!isMobile && (
             <div className="relative group">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+                <Search className="h-5 w-5 text-gray-400" />
               </div>
               <input
                 type="text"

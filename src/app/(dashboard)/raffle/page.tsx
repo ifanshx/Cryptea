@@ -1,5 +1,6 @@
 'use client';
-import { ClockIcon, TicketIcon } from '@heroicons/react/24/outline';
+import { Ticket, Clock } from 'lucide-react';
+
 import React from 'react';
 
 const raffleNFTs = [
@@ -60,7 +61,7 @@ export default function RafflePage() {
 
               {/* Countdown Timer */}
               <div className="absolute top-4 right-4 bg-black/30 px-3 py-1 rounded-full flex items-center text-white text-sm">
-                <ClockIcon className="w-4 h-4 mr-2" />
+                <Clock className="w-4 h-4 mr-2" />
                 <span>2d 14h left</span>
               </div>
             </div>
@@ -103,7 +104,7 @@ export default function RafflePage() {
                 </div>
 
                 <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2 rounded-full flex items-center transition-all">
-                  <TicketIcon className="w-5 h-5 mr-2" />
+                  <Ticket className="w-5 h-5 mr-2" />
                   Participate
                 </button>
               </div>

@@ -2,12 +2,15 @@
 
 import { useState, useRef, CSSProperties } from "react";
 import { formatEther } from "viem";
+
+
 import {
-  SparklesIcon,
-  CheckIcon,
-  ClockIcon,
-  ExclamationTriangleIcon
-} from "@heroicons/react/24/solid";
+  Sparkles,
+  Check,
+  Clock,
+  AlertTriangle
+} from "lucide-react";
+
 
 interface StakeCardProps {
   nft: {
@@ -82,7 +85,7 @@ const StakeCard = ({ nft, isSelected, onSelect }: StakeCardProps) => {
         {/* Emergency state overlay */}
         {nft.isEmergency && (
           <div className="absolute inset-0 bg-red-900/20 backdrop-blur-sm flex items-center justify-center">
-            <ExclamationTriangleIcon className="w-8 h-8 text-red-400 animate-pulse" />
+            <AlertTriangle className="w-8 h-8 text-red-400 animate-pulse" />
           </div>
         )}
       </div>
@@ -114,7 +117,7 @@ const StakeCard = ({ nft, isSelected, onSelect }: StakeCardProps) => {
         {/* Staking duration */}
         {nft.isStaked && (
           <div className="bg-purple-400/20 backdrop-blur-sm px-2 py-1 rounded-full text-xs flex items-center gap-1 border border-purple-400/30">
-            <ClockIcon className="w-4 h-4 text-purple-200" />
+            <Clock className="w-4 h-4 text-purple-200" />
             <span className="text-purple-100 font-medium">
               {formatDuration()}
             </span>
@@ -124,7 +127,7 @@ const StakeCard = ({ nft, isSelected, onSelect }: StakeCardProps) => {
         {/* Claimable reward */}
         {nft.claimableReward && (
           <div className="bg-green-400/20 backdrop-blur-sm px-2 py-1 rounded-full text-xs flex items-center gap-1 border border-green-400/30">
-            <SparklesIcon className="w-4 h-4 text-green-200" />
+            <Sparkles className="w-4 h-4 text-green-200" />
             <span className="text-green-100 font-medium">
               +{formatReward(nft.claimableReward)}
             </span>
@@ -136,7 +139,7 @@ const StakeCard = ({ nft, isSelected, onSelect }: StakeCardProps) => {
       {isSelected && (
         <div className="absolute inset-0 bg-gradient-to-br from-purple-400/20 to-pink-400/20 backdrop-blur-sm flex items-center justify-center">
           <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full flex items-center justify-center text-white animate-pulse-slow">
-            <CheckIcon className="w-6 h-6" />
+            <Check className="w-6 h-6" />
           </div>
         </div>
       )}

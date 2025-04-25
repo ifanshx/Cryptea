@@ -3,7 +3,7 @@
 
 import React from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { ChevronDown } from "lucide-react";
 
 const HomeConnect = () => {
   return (
@@ -41,7 +41,7 @@ const HomeConnect = () => {
                 className="flex items-center gap-1 text-gray-900 hover:text-gray-700 font-medium text-sm"
               >
                 Connect Wallet
-                <ChevronDownIcon className="w-4 h-4" />
+                <ChevronDown className="w-4 h-4" />
               </button>
             ) : chain.unsupported ? (
               <button
@@ -49,7 +49,7 @@ const HomeConnect = () => {
                 className="flex items-center gap-1 text-red-600 hover:text-red-800 font-medium text-sm"
               >
                 Wrong Network
-                <ChevronDownIcon className="w-4 h-4" />
+                <ChevronDown className="w-4 h-4" />
               </button>
             ) : (
               <button
@@ -57,7 +57,7 @@ const HomeConnect = () => {
                 className="flex items-center gap-1 text-gray-900 hover:text-gray-700 font-medium text-sm"
               >
                 {account.displayName}
-                <ChevronDownIcon className="w-4 h-4" />
+                <ChevronDown className="w-4 h-4" />
               </button>
             )}
           </div>
