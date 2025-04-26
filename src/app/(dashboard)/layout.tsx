@@ -43,9 +43,7 @@ export default function DashboardLayout({
           style={{ marginLeft: isMobile ? 0 : sidebarOpen ? 250 : 80 }}
         >
           <Suspense fallback={<Loading />}>
-            <div className="px-3 py-6">
-              {children}
-            </div>
+            <div className="">{children}</div>
           </Suspense>
         </main>
       </div>

@@ -1,12 +1,5 @@
-'use client';
+"use client";
 
-import {
-  CubeTransparentIcon,
-  PhotoIcon,
-  SparklesIcon,
-  CurrencyDollarIcon,
-  ArrowPathIcon
-} from "@heroicons/react/24/outline";
 import { METADATA_TRAITS } from "@/constants/metadata";
 import { useToast } from "@/context/ToastContext";
 import { PinataSDK } from "pinata";
@@ -20,6 +13,12 @@ import {
 } from "wagmi";
 import { parseEther } from "viem";
 import { mintNFTABI, mintNFTAddress } from "@/constants/ContractAbi";
+import {
+  Currency,
+  GalleryThumbnailsIcon,
+  Loader,
+  Sparkles,
+} from "lucide-react";
 
 const pinata = new PinataSDK({
   pinataJwt: process.env.NEXT_PUBLIC_PINATA_JWT,
@@ -53,7 +52,10 @@ export default function GenerateImagePage() {
   const [isRandomizing, setIsRandomizing] = useState(false);
   const [activeTrait, setActiveTrait] = useState<TraitType>("Background");
   const [selectedTraits, setSelectedTraits] = useState<SelectedTraits>(
-    traits.reduce((acc, trait) => ({ ...acc, [trait]: "" }), {} as SelectedTraits)
+    traits.reduce(
+      (acc, trait) => ({ ...acc, [trait]: "" }),
+      {} as SelectedTraits
+    )
   );
   const [isUploading, setIsUploading] = useState(false);
   const [pendingFiles, setPendingFiles] = useState<string[]>([]);
@@ -99,18 +101,24 @@ export default function GenerateImagePage() {
     await new Promise((r) => setTimeout(r, 50));
     const randomTraits = traits.reduce((acc, trait) => {
       const opts = METADATA_TRAITS[trait];
-      return { ...acc, [trait]: opts[Math.floor(Math.random() * opts.length)] || "" };
+      return {
+        ...acc,
+        [trait]: opts[Math.floor(Math.random() * opts.length)] || "",
+      };
     }, {} as SelectedTraits);
     setSelectedTraits(randomTraits);
     setIsRandomizing(false);
   }, [traits]);
 
-  const handleSelectTrait = useCallback((asset: string) => {
-    setSelectedTraits((prev) => ({
-      ...prev,
-      [activeTrait]: prev[activeTrait] === asset ? "" : asset,
-    }));
-  }, [activeTrait]);
+  const handleSelectTrait = useCallback(
+    (asset: string) => {
+      setSelectedTraits((prev) => ({
+        ...prev,
+        [activeTrait]: prev[activeTrait] === asset ? "" : asset,
+      }));
+    },
+    [activeTrait]
+  );
 
   const composeImage = useCallback(async (sel: SelectedTraits) => {
     setIsComposing(true);
@@ -223,9 +231,7 @@ export default function GenerateImagePage() {
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900">
             Ethereal Entities
           </h1>
-          <p className="text-lg text-gray-600">
-            by Digital Artistry
-          </p>
+          <p className="text-lg text-gray-600">by Digital Artistry</p>
         </header>
 
         {/* Stats */}
@@ -236,9 +242,9 @@ export default function GenerateImagePage() {
               <div
                 className="bg-gradient-to-r from-blue-400 to-purple-500 h-2 rounded-full transition-all duration-500"
                 style={{
-                  width: `${(Number(totalSupply) /
-                    Number(maxSupply || 1)) *
-                    100}%`,
+                  width: `${
+                    (Number(totalSupply) / Number(maxSupply || 1)) * 100
+                  }%`,
                 }}
               />
             </div>
@@ -252,10 +258,10 @@ export default function GenerateImagePage() {
             <p className="text-sm text-gray-500 mb-1">Your Balance</p>
             <div className="flex items-center justify-between">
               <p className="text-3xl font-bold text-gray-800">
-                {(balance?.formatted.slice(0, 7) || "0.00")} TEA
+                {balance?.formatted.slice(0, 7) || "0.00"} TEA
               </p>
               <div className="p-3 bg-green-100 rounded-lg">
-                <CurrencyDollarIcon className="w-6 h-6 text-green-600" />
+                <Currency className="w-6 h-6 text-green-600" />
               </div>
             </div>
           </div>
@@ -266,7 +272,7 @@ export default function GenerateImagePage() {
           <div className="bg-white rounded-xl shadow p-6">
             <div className="mb-6 flex items-center justify-between">
               <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                <PhotoIcon className="w-5 h-5 text-blue-400" />
+                <GalleryThumbnailsIcon className="w-5 h-5 text-blue-400" />
                 {activeTrait} Selection
               </h3>
               <span className="text-sm text-gray-500">
@@ -280,10 +286,11 @@ export default function GenerateImagePage() {
                 <button
                   key={trait}
                   onClick={() => setActiveTrait(trait)}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium transition ${activeTrait === trait
-                    ? "bg-blue-400 text-white shadow"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                    }`}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition ${
+                    activeTrait === trait
+                      ? "bg-blue-400 text-white shadow"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }`}
                 >
                   {trait}
                 </button>
@@ -293,9 +300,7 @@ export default function GenerateImagePage() {
             <div className="md:hidden mb-6">
               <select
                 value={activeTrait}
-                onChange={(e) =>
-                  setActiveTrait(e.target.value as TraitType)
-                }
+                onChange={(e) => setActiveTrait(e.target.value as TraitType)}
                 className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-700 focus:ring-2 focus:ring-blue-200"
               >
                 {traits.map((t) => (
@@ -312,10 +317,11 @@ export default function GenerateImagePage() {
                 <button
                   key={asset}
                   onClick={() => handleSelectTrait(asset)}
-                  className={`relative aspect-square rounded-xl border-2 transition ${selectedTraits[activeTrait] === asset
-                    ? "border-blue-400 scale-105 shadow ring-2 ring-blue-200"
-                    : "border-gray-200 hover:border-blue-300"
-                    }`}
+                  className={`relative aspect-square rounded-xl border-2 transition ${
+                    selectedTraits[activeTrait] === asset
+                      ? "border-blue-400 scale-105 shadow ring-2 ring-blue-200"
+                      : "border-gray-200 hover:border-blue-300"
+                  }`}
                 >
                   <img
                     src={`/assets/${activeTrait}/${asset}`}
@@ -337,8 +343,10 @@ export default function GenerateImagePage() {
             <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden relative mb-4">
               {isComposing ? (
                 <div className="h-full flex flex-col items-center justify-center space-y-3 animate-pulse">
-                  <ArrowPathIcon className="w-8 h-8 text-blue-400 animate-spin" />
-                  <p className="text-gray-500 text-sm">Assembling your NFT...</p>
+                  <Loader className="w-8 h-8 text-blue-400 animate-spin" />
+                  <p className="text-gray-500 text-sm">
+                    Assembling your NFT...
+                  </p>
                 </div>
               ) : previewImage.length ? (
                 previewImage.map((src, i) => (
@@ -352,7 +360,7 @@ export default function GenerateImagePage() {
                 ))
               ) : (
                 <div className="h-full flex flex-col items-center justify-center space-y-4">
-                  <SparklesIcon className="w-16 h-16 text-blue-200" />
+                  <Sparkles className="w-16 h-16 text-blue-200" />
                   <p className="text-gray-400 font-medium">
                     Select traits to begin crafting
                   </p>
@@ -384,15 +392,16 @@ export default function GenerateImagePage() {
             <button
               onClick={handleRandomize}
               disabled={isRandomizing}
-              className={`flex items-center gap-2 px-6 py-3 rounded-lg transition ${isRandomizing
-                ? "bg-gray-200 cursor-not-allowed text-gray-400"
-                : "bg-white hover:bg-gray-50 text-gray-600"
-                }`}
+              className={`flex items-center gap-2 px-6 py-3 rounded-lg transition ${
+                isRandomizing
+                  ? "bg-gray-200 cursor-not-allowed text-gray-400"
+                  : "bg-white hover:bg-gray-50 text-gray-600"
+              }`}
             >
               {isRandomizing ? (
-                <ArrowPathIcon className="w-5 h-5 animate-spin text-blue-400" />
+                <Loader className="w-5 h-5 animate-spin text-blue-400" />
               ) : (
-                <CubeTransparentIcon className="w-5 h-5 text-blue-400" />
+                <Loader className="w-5 h-5 text-blue-400" />
               )}
               <span className="font-medium">
                 {isRandomizing ? "Randomizing..." : "Randomize"}
@@ -402,10 +411,11 @@ export default function GenerateImagePage() {
             <button
               onClick={handleMint}
               disabled={!isConnected || isLoading || !previewImage.length}
-              className={`flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-xl transition ${isLoading
-                ? "bg-blue-400 cursor-not-allowed text-white"
-                : "bg-gradient-to-r from-blue-400 to-purple-400 hover:shadow-lg"
-                }`}
+              className={`flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-xl transition ${
+                isLoading
+                  ? "bg-blue-400 cursor-not-allowed text-white"
+                  : "bg-gradient-to-r from-blue-400 to-purple-400 hover:shadow-lg"
+              }`}
             >
               {isLoading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-white/20 backdrop-blur-sm">
@@ -413,7 +423,7 @@ export default function GenerateImagePage() {
                 </div>
               )}
               <div className="relative flex items-center gap-2 text-white">
-                <SparklesIcon className="w-6 h-6 text-amber-200" />
+                <Sparkles className="w-6 h-6 text-amber-200" />
                 <div className="text-left">
                   <p className="text-lg font-semibold">Mint Now</p>
                   <p className="text-xs font-medium">
