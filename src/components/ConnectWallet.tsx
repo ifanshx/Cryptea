@@ -1,7 +1,7 @@
 "use client";
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { WalletIcon } from "@heroicons/react/24/outline";
+import { Wallet } from "lucide-react";
 
 const ConnectWallet = () => {
   return (
@@ -43,7 +43,7 @@ const ConnectWallet = () => {
                         rounded-full shadow-lg transition-all duration-200
                         bg-gradient-to-r from-pink-400 to-purple-500 hover:from-pink-500 hover:to-purple-600"
                     >
-                      <WalletIcon className="w-5 h-5 text-white" />
+                      <Wallet className="w-5 h-5 text-white" />
                       <span className="text-white font-medium text-sm md:text-base">
                         <span className="md:hidden">Connect</span>
                         <span className="hidden md:inline">Connect Wallet</span>
@@ -95,7 +95,7 @@ const ConnectWallet = () => {
                       className="bg-white/90 backdrop-blur-sm hover:bg-white px-4 py-2
                         rounded-full shadow-md flex items-center gap-2 group"
                     >
-                      <WalletIcon className="w-5 h-5 text-purple-600" />
+                      <Wallet className="w-5 h-5 text-purple-600" />
                       <span className="text-gray-800 font-medium text-sm">
                         {account.displayName}
                       </span>
