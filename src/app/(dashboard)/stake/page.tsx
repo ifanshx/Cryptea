@@ -20,7 +20,7 @@ import {
   StakeZephyrABI,
 } from "@/constants/ZephyrusAbi";
 import Image from "next/image";
-import { ArrowUpLeftSquare, Loader, Sparkles, Wallet } from "lucide-react";
+import { Loader, Sparkles, Wallet } from "lucide-react";
 
 interface NFT {
   id: string;
@@ -367,95 +367,85 @@ const StakePage = () => {
   const isLoading = activeTab === "owned" ? loadingOwned : loadingStaked;
 
   return (
-    <div className="min-h-screen py-6 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-6 px-4 sm:px-6 lg:px-8 bg-gray-50">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left/Main Section */}
-        <div className="lg:col-span-2 space-y-8">
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-gray-900">
-            Earn rewards with your digital assets
+        {/* Main Section */}
+        <div className="lg:col-span-2 flex flex-col gap-8">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-gray-900">
+            Earn Rewards with Your Digital Assets
           </h1>
 
           {/* Tabs */}
-          <div className="flex gap-4 mb-8 justify-center">
-            <button
-              onClick={() => setActiveTab("owned")}
-              className={`px-6 py-2 rounded-full flex items-center gap-2 transition-all ${
-                activeTab === "owned"
-                  ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-lg"
-                  : "bg-white text-gray-600 hover:bg-gray-50 border"
-              }`}
-            >
-              <Wallet className="w-5 h-5" />
-              Owned ({ownedNFTs.length})
-            </button>
-            <button
-              onClick={() => setActiveTab("staked")}
-              className={`px-6 py-2 rounded-full flex items-center gap-2 transition-all ${
-                activeTab === "staked"
-                  ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
-                  : "bg-white text-gray-600 hover:bg-gray-50 border"
-              }`}
-            >
-              <Sparkles className="w-5 h-5" />
-              Staked ({stakedNFTs.length})
-            </button>
+          <div className="flex space-x-4 overflow-x-auto">
+            {['owned', 'staked'].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab as "owned" | "staked")}
+                className={
+                  `flex items-center gap-2 px-4 py-2 rounded-full transition shadow-sm whitespace-nowrap ` +
+                  (activeTab === tab
+                    ? 'bg-teal-500 text-white shadow-lg'
+                    : 'bg-white text-gray-600 border hover:bg-gray-100')
+                }
+              >
+                {tab === 'owned' ? <Wallet className="w-5 h-5" /> : <Sparkles className="w-5 h-5" />}
+                {tab === 'owned' ? `Owned (${ownedNFTs.length})` : `Staked (${stakedNFTs.length})`}
+              </button>
+            ))}
           </div>
 
-          {/* Main Content */}
-          <div className="lg:col-span-3">
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200 animate-slide-up">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                <h2 className="text-xl font-semibold flex items-center gap-2">
-                  {activeTab === "owned" ? "Your NFTs" : "Staked NFTs"}
-                  {isLoading && (
-                    <ArrowUpLeftSquare className="w-5 h-5 animate-spin text-gray-400" />
-                  )}
-                </h2>
-                <div className="flex gap-3 w-full sm:w-auto">
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="px-4 py-2 border rounded-lg w-full focus:ring-2 focus:ring-purple-200"
-                  />
-                  <select
-                    value={sortBy}
-                    onChange={(e) =>
-                      setSortBy(e.target.value as "newest" | "id")
-                    }
-                    className="px-4 py-2 border rounded-lg bg-white"
-                  >
-                    <option value="newest">Newest</option>
-                    <option value="id">ID</option>
-                  </select>
-                </div>
+          {/* Content Panel with Scroll */}
+          <div className="bg-white rounded-2xl shadow p-6 border border-gray-200 ">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+              <h2 className="flex items-center gap-2 text-xl font-semibold text-gray-900">
+                {activeTab === 'owned' ? 'Your NFTs' : 'Staked NFTs'}
+                {isLoading && <Loader className="w-5 h-5 animate-spin text-gray-400" />}
+              </h2>
+              <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-200"
+                />
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as "newest" | "id")}
+                  className="px-4 py-2 border rounded-lg bg-white"
+                >
+                  <option value="newest">Newest</option>
+                  <option value="id">ID</option>
+                </select>
               </div>
-
-              {filteredNFTs.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4">
-                  {filteredNFTs.map((nft) => (
-                    <StakeCard
-                      key={nft.id}
-                      nft={nft}
-                      isSelected={selectedNFTs.includes(nft.tokenId)}
-                      onSelect={() =>
-                        setSelectedNFTs((prev) =>
-                          prev.includes(nft.tokenId)
-                            ? prev.filter((id) => id !== nft.tokenId)
-                            : [...prev, nft.tokenId]
-                        )
-                      }
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12 text-gray-500">
-                  {isLoading ? "Loading..." : "No NFTs found"}
-                </div>
-              )}
             </div>
+
+            {filteredNFTs.length > 0 ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-5  max-h-[600px] sm:max-h-[700px] overflow-y-auto">
+                {filteredNFTs.map((nft) => (
+                  <StakeCard
+                    key={nft.id}
+                    nft={nft}
+                    isSelected={selectedNFTs.includes(nft.tokenId)}
+                    onSelect={() =>
+                      setSelectedNFTs((prev) =>
+                        prev.includes(nft.tokenId)
+                          ? prev.filter((id) => id !== nft.tokenId)
+                          : [...prev, nft.tokenId]
+                      )
+                    }
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="py-12 text-center text-gray-500">
+                {isLoading ? 'Loading...' : 'No NFTs found'}
+              </div>
+            )}
           </div>
+
+
+
 
           {/* Stake & Rewards Overview */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -466,52 +456,36 @@ const StakePage = () => {
                 </span>
                 <button
                   onClick={handleApprove}
-                  className="mt-4 bg-black text-white rounded-full px-8 py-2 hover:opacity-90 transition"
+                  className="mt-4 bg-teal-500 text-white rounded-full px-8 py-2 hover:opacity-90 transition"
                   disabled={isPending}
                 >
-                  {isPending ? (
-                    <Loader className="w-5 h-5 animate-spin mx-auto" />
-                  ) : (
-                    "Approve Staking"
-                  )}
+                  {isPending ? <Loader className="w-5 h-5 animate-spin" /> : 'Approve'}
+
                 </button>
               </div>
             )}
             {(activeTab === "staked" ||
               (activeTab === "owned" && isApproved)) && (
-              <div className="bg-white rounded-2xl shadow p-6 flex justify-between items-center">
-                <div className="flex flex-col">
-                  <span className="text-gray-500 text-sm">Stake Overview</span>
-                  <span className="text-3xl font-bold text-gray-900 mt-2">
-                    {isPending ? (
-                      <Loader className="w-5 h-5 animate-spin mx-auto" />
-                    ) : activeTab === "owned" ? (
-                      ` ${selectedNFTs.length} NFT${
-                        selectedNFTs.length !== 1 ? "s" : ""
-                      }`
-                    ) : (
-                      ` ${selectedNFTs.length} NFT${
-                        selectedNFTs.length !== 1 ? "s" : ""
-                      }`
-                    )}
-                  </span>
+                <div className="bg-white rounded-2xl shadow p-6 flex justify-between items-center">
+                  <div className="flex flex-col">
+                    <span className="text-gray-500 text-sm">
+                      {activeTab === "owned" ? "Stake Options" : "Unstake"}
+                    </span>
+                    <span className="text-3xl font-bold text-gray-900 mt-2">
+                      {selectedNFTs.length} NFT{selectedNFTs.length !== 1 && 's'}
+
+                    </span>
+                  </div>
+                  <button
+                    onClick={activeTab === "owned" ? handleStake : handleUnstake}
+                    disabled={!selectedNFTs.length || isPending}
+                    className="mt-4 bg-teal-500 text-white rounded-full px-8 py-2 hover:opacity-90 transition"
+                  >
+                    {isPending ? <Loader className="w-5 h-5 animate-spin" /> : activeTab === 'owned' ? 'Stake' : 'Unstake'}
+
+                  </button>
                 </div>
-                <button
-                  onClick={activeTab === "owned" ? handleStake : handleUnstake}
-                  disabled={!selectedNFTs.length || isPending}
-                  className="mt-4 bg-black text-white rounded-full px-8 py-2 hover:opacity-90 transition"
-                >
-                  {isPending ? (
-                    <Loader className="w-5 h-5 animate-spin mx-auto" />
-                  ) : activeTab === "owned" ? (
-                    `Stake 
-                    `
-                  ) : (
-                    `Unstake`
-                  )}
-                </button>
-              </div>
-            )}
+              )}
 
             <div className="bg-white rounded-2xl shadow p-6 flex justify-between items-center">
               <div className="flex flex-col">
@@ -523,37 +497,30 @@ const StakePage = () => {
               <button
                 onClick={handleClaim}
                 disabled={!selectedNFTs.length || isPending}
-                className="mt-4 bg-black text-white rounded-full px-8 py-2 hover:opacity-90 transition"
+                className="mt-4 bg-teal-500 text-white rounded-full px-8 py-2 hover:opacity-90 transition"
               >
-                {isPending ? (
-                  <Loader className="w-5 h-5 animate-spin mx-auto" />
-                ) : (
-                  `Claim`
-                )}
+                {isPending ? <Loader className="w-5 h-5 animate-spin" /> : 'Claim'}
+
               </button>
             </div>
           </div>
         </div>
 
-        {/* Right Section: Leaderboard */}
-        <div className="space-y-4">
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
-            Leaderboard
-          </h2>
-          <div className="bg-white rounded-2xl shadow overflow-hidden">
+        {/* Leaderboard */}
+        <aside className="space-y-4">
+          <h2 className="text-xl font-semibold text-gray-900">Leaderboard</h2>
+          <div className="bg-white rounded-2xl shadow overflow-y-auto max-h-[500px]">
             {leaderboard.map((entry, idx) => (
               <div
                 key={idx}
-                className={`flex justify-between items-center px-4 py-3 transition 
-                  ${
-                    entry.address === "You"
-                      ? "bg-green-50 border-l-4 border-green-500"
-                      : "hover:bg-gray-50"
-                  }
-                `}
+                className={`flex items-center justify-between px-4 py-3 transition ` +
+                  (entry.address === 'You'
+                    ? 'bg-green-50 border-l-4 border-green-500'
+                    : 'hover:bg-gray-50')
+                }
               >
-                <div className="flex items-center space-x-3 truncated">
-                  <span className="font-medium w-6">{idx + 1}.</span>
+                <div className="flex items-center space-x-3 min-w-0">
+                  <span className="w-6 font-medium">{idx + 1}.</span>
                   <div className="w-8 h-8 relative rounded-full overflow-hidden">
                     <Image
                       src={entry.avatar}
@@ -562,19 +529,15 @@ const StakePage = () => {
                       objectFit="cover"
                     />
                   </div>
-                  <span className="text-sm sm:text-base truncate max-w-[8rem]">
-                    {entry.address}
-                  </span>
+                  <span className="truncate text-base max-w-[6rem]">{entry.address}</span>
                 </div>
-                <span className="font-semibold text-sm sm:text-base">
-                  {entry.amount.toLocaleString()} CTEA
-                </span>
+                <span className="font-semibold text-base">{entry.amount.toLocaleString()} CTEA</span>
               </div>
             ))}
           </div>
-        </div>
+        </aside>
       </div>
-    </div>
+    </div >
   );
 };
 

@@ -1,7 +1,7 @@
 "use client";
 
+import { Sparkles } from "lucide-react";
 import { useState } from "react";
-import { SparklesIcon } from "@heroicons/react/24/outline";
 
 interface NFTCardProps {
   nft: {
@@ -37,9 +37,8 @@ const NFTCard: React.FC<NFTCardProps> = ({ nft, index = 0 }) => {
           <div
             className="relative w-full h-full perspective-1000"
             style={{
-              transform: `rotateX(${mousePosition.y * 8}deg) rotateY(${
-                -mousePosition.x * 8
-              }deg)`,
+              transform: `rotateX(${mousePosition.y * 8}deg) rotateY(${-mousePosition.x * 8
+                }deg)`,
             }}
           >
             <img
@@ -74,7 +73,7 @@ const NFTCard: React.FC<NFTCardProps> = ({ nft, index = 0 }) => {
             className="bg-pink-500 hover:bg-pink-600 text-white px-4 py-2 rounded-xl transition-all 
             flex items-center gap-2 hover:scale-95"
           >
-            <SparklesIcon className="w-4 h-4" />
+            <Sparkles className="w-4 h-4" />
             Buy
           </button>
         </div>

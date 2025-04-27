@@ -5,9 +5,7 @@ import { formatEther } from "viem";
 
 
 import {
-  Sparkles,
   Check,
-  Clock,
   AlertTriangle
 } from "lucide-react";
 
@@ -37,12 +35,7 @@ const StakeCard = ({ nft, isSelected, onSelect }: StakeCardProps) => {
     return parseFloat(formatEther(reward)).toFixed(2);
   };
 
-  const formatDuration = () => {
-    if (!nft.stakingDuration) return "0d";
-    const days = Math.floor(nft.stakingDuration);
-    const hours = Math.round((nft.stakingDuration - days) * 24);
-    return `${days}d ${hours}h`;
-  };
+
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
@@ -67,8 +60,8 @@ const StakeCard = ({ nft, isSelected, onSelect }: StakeCardProps) => {
       onMouseMove={handleMouseMove}
       onMouseLeave={() => setMousePosition({ x: 0, y: 0 })}
       className={`relative cursor-pointer group overflow-hidden rounded-2xl border-2 bg-white/5 backdrop-blur-sm
-        ${isSelected ? "border-purple-400 bg-purple-50/20" : "border-purple-400/20"}
-        ${nft.isEmergency ? "border-red-400/50 animate-pulse" : ""}
+        ${isSelected ? "border-[#52c6a3] bg-purple-50/20" : "border-[#52c6a3]"}
+        ${nft.isEmergency ? "border-[#52c6a3] animate-pulse" : ""}
         ${nft.isStaked ? "opacity-100" : "hover:border-purple-400/40"} shadow-lg hover:shadow-xl transition-all`}
       style={cardStyle}
     >
@@ -79,66 +72,35 @@ const StakeCard = ({ nft, isSelected, onSelect }: StakeCardProps) => {
           className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110"
         />
 
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-900/10 to-purple-900/40" />
 
         {/* Emergency state overlay */}
         {nft.isEmergency && (
-          <div className="absolute inset-0 bg-red-900/20 backdrop-blur-sm flex items-center justify-center">
+          <div className="absolute inset-0 bg-[#52c6a3] backdrop-blur-sm flex items-center justify-center">
             <AlertTriangle className="w-8 h-8 text-red-400 animate-pulse" />
           </div>
         )}
       </div>
 
       {/* Card footer */}
-      <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-purple-900/90 via-purple-900/50 to-transparent">
-        <div className="flex justify-between items-start">
-          <div>
-            <h3 className="font-medium text-white truncate text-sm drop-shadow-[0_1px_2px_rgba(0,0,0,0.4)]">
-              {nft.name}
-            </h3>
-            <p className="text-xs text-purple-100/90 mt-1 drop-shadow-[0_1px_1px_rgba(0,0,0,0.3)]">
-              ID: #{nft.tokenId}
-            </p>
-          </div>
-
-          {nft.startTimestamp && (
-            <div className="text-right">
-              <p className="text-xs text-purple-100/70">
-                {new Date(nft.startTimestamp * 1000).toLocaleDateString()}
-              </p>
+      <div className="absolute bottom-0 left-0 right-0 p-3 ">
+        <div className="flex justify-center items-start">
+          {/* Claimable reward */}
+          {nft.claimableReward && (
+            <div className="bg-[#52c6a3] px-2 py-1 rounded-md text-xs flex items-center gap-1 border border-green-400/30">
+              <span className="text-green-100 font-medium">
+                ⚡️+{formatReward(nft.claimableReward)} $CTEA
+              </span>
             </div>
           )}
         </div>
       </div>
 
-      {/* Top badges */}
-      <div className="absolute top-2 inset-x-2 flex justify-between">
-        {/* Staking duration */}
-        {nft.isStaked && (
-          <div className="bg-purple-400/20 backdrop-blur-sm px-2 py-1 rounded-full text-xs flex items-center gap-1 border border-purple-400/30">
-            <Clock className="w-4 h-4 text-purple-200" />
-            <span className="text-purple-100 font-medium">
-              {formatDuration()}
-            </span>
-          </div>
-        )}
 
-        {/* Claimable reward */}
-        {nft.claimableReward && (
-          <div className="bg-green-400/20 backdrop-blur-sm px-2 py-1 rounded-full text-xs flex items-center gap-1 border border-green-400/30">
-            <Sparkles className="w-4 h-4 text-green-200" />
-            <span className="text-green-100 font-medium">
-              +{formatReward(nft.claimableReward)}
-            </span>
-          </div>
-        )}
-      </div>
 
       {/* Selection overlay */}
       {isSelected && (
         <div className="absolute inset-0 bg-gradient-to-br from-purple-400/20 to-pink-400/20 backdrop-blur-sm flex items-center justify-center">
-          <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-pink-500 rounded-full flex items-center justify-center text-white animate-pulse-slow">
+          <div className="w-10 h-10 bg-[#52c6a3] rounded-full flex items-center justify-center text-white animate-pulse-slow">
             <Check className="w-6 h-6" />
           </div>
         </div>
