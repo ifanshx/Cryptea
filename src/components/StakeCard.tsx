@@ -75,33 +75,26 @@ const StakeCard = ({ nft, isSelected, onSelect }: StakeCardProps) => {
 
         {/* Emergency state overlay */}
         {nft.isEmergency && (
-          <div className="absolute inset-0 bg-[#52c6a3] backdrop-blur-sm flex items-center justify-center">
+          <div className="absolute inset-0 bg-red-900/20 flex items-center justify-center">
             <AlertTriangle className="w-8 h-8 text-red-400 animate-pulse" />
           </div>
         )}
       </div>
 
-      {/* Card footer */}
       <div className="absolute bottom-0 left-0 right-0 p-3 ">
-        <div className="flex justify-center items-start">
-          {/* Claimable reward */}
-          {nft.claimableReward && (
-            <div className="bg-[#52c6a3] px-2 py-1 rounded-md text-xs flex items-center gap-1 border border-green-400/30">
-              <span className="text-green-100 font-medium">
-                ⚡️+{formatReward(nft.claimableReward)} $CTEA
-              </span>
-            </div>
-          )}
-        </div>
+        {nft.claimableReward && (
+          <div className="bg-[#52c6a3] px-2 py-1 rounded-md text-xs flex items-center gap-1 border border-green-400/30">
+            ⚡️+ {formatReward(nft.claimableReward)} CTEA
+          </div>
+        )}
       </div>
 
 
 
-      {/* Selection overlay */}
       {isSelected && (
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-400/20 to-pink-400/20 backdrop-blur-sm flex items-center justify-center">
-          <div className="w-10 h-10 bg-[#52c6a3] rounded-full flex items-center justify-center text-white animate-pulse-slow">
-            <Check className="w-6 h-6" />
+        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-purple-300/30 to-pink-300/30">
+          <div className="flex items-center justify-center w-10 h-10 bg-teal-500 rounded-full animate-pulse">
+            <Check className="w-6 h-6 text-white" />
           </div>
         </div>
       )}

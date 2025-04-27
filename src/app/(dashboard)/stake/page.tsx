@@ -19,8 +19,8 @@ import {
   StakeZephyrAddress,
   StakeZephyrABI,
 } from "@/constants/ZephyrusAbi";
-import Image from "next/image";
 import { Loader, Sparkles, Wallet } from "lucide-react";
+import LeaderboardSticky from "@/components/LeaderboardSticky";
 
 interface NFT {
   id: string;
@@ -36,32 +36,6 @@ type StakeInfoOutput = {
   claimableReward: bigint;
 };
 
-const leaderboard = [
-  {
-    address: "0x32...A5C4",
-    avatar: "/assets/EtherealEntities.png",
-    amount: 200_000,
-  },
-  { address: "0x32...A5C4", avatar: "/assets/rabbits.png", amount: 20_000 },
-  {
-    address: "0x32...A5C4",
-    avatar: "/assets/EtherealEntities.png",
-    amount: 2_000,
-  },
-  { address: "0x32...A5C4", avatar: "/assets/rabbits.png", amount: 1_000 },
-  {
-    address: "0x32...A5C4",
-    avatar: "/assets/EtherealEntities.png",
-    amount: 900,
-  },
-  { address: "0x32...A5C4", avatar: "/assets/rabbits.png", amount: 500 },
-  {
-    address: "0x32...A5C4",
-    avatar: "/assets/EtherealEntities.png",
-    amount: 60,
-  },
-  { address: "You", avatar: "/assets/EtherealEntities.png", amount: 7 },
-];
 
 const StakePage = () => {
   const { showToast } = useToast();
@@ -77,6 +51,28 @@ const StakePage = () => {
     unstake?: `0x${string}`;
     claim?: `0x${string}`;
   }>({});
+
+
+  const staticLeaderboard = useMemo(() => [
+    { address: "0x32...A5C4", avatar: "/assets/EtherealEntities.png", amount: 200000 },
+    { address: "0xAB...1234", avatar: "/assets/rabbits.png", amount: 20000 },
+    { address: "0xCD...5678", avatar: "/assets/EtherealEntities.png", amount: 2000 },
+    { address: "0xEF...9ABC", avatar: "/assets/rabbits.png", amount: 1000 },
+    { address: "0x01...2345", avatar: "/assets/EtherealEntities.png", amount: 900 },
+    { address: "0x67...8901", avatar: "/assets/rabbits.png", amount: 500 },
+    { address: "0x23...4567", avatar: "/assets/EtherealEntities.png", amount: 60 },
+    { address: "0x21...4537", avatar: "/assets/EtherealEntities.png", amount: 60 },
+    { address: "0x43...4127", avatar: "/assets/EtherealEntities.png", amount: 60 },
+  ], []);
+
+  // Append your entry dynamically at the end
+  const leaderboardData = useMemo(
+    () => [
+      ...staticLeaderboard,
+      { address: address || "", avatar: "/assets/EtherealEntities.png", amount: 7 },
+    ],
+    [staticLeaderboard, address]
+  );
 
   // Reset selected NFTs when tab changes
   useEffect(() => setSelectedNFTs([]), [activeTab]);
@@ -421,7 +417,7 @@ const StakePage = () => {
             </div>
 
             {filteredNFTs.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-5  max-h-[600px] sm:max-h-[700px] overflow-y-auto">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4 p-5  max-h-[600px] sm:max-h-[700px] overflow-y-auto">
                 {filteredNFTs.map((nft) => (
                   <StakeCard
                     key={nft.id}
@@ -507,35 +503,9 @@ const StakePage = () => {
         </div>
 
         {/* Leaderboard */}
-        <aside className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-900">Leaderboard</h2>
-          <div className="bg-white rounded-2xl shadow overflow-y-auto max-h-[500px]">
-            {leaderboard.map((entry, idx) => (
-              <div
-                key={idx}
-                className={`flex items-center justify-between px-4 py-3 transition ` +
-                  (entry.address === 'You'
-                    ? 'bg-green-50 border-l-4 border-green-500'
-                    : 'hover:bg-gray-50')
-                }
-              >
-                <div className="flex items-center space-x-3 min-w-0">
-                  <span className="w-6 font-medium">{idx + 1}.</span>
-                  <div className="w-8 h-8 relative rounded-full overflow-hidden">
-                    <Image
-                      src={entry.avatar}
-                      alt={entry.address}
-                      layout="fill"
-                      objectFit="cover"
-                    />
-                  </div>
-                  <span className="truncate text-base max-w-[6rem]">{entry.address}</span>
-                </div>
-                <span className="font-semibold text-base">{entry.amount.toLocaleString()} CTEA</span>
-              </div>
-            ))}
-          </div>
-        </aside>
+        <LeaderboardSticky leaderboard={leaderboardData} currentAddress={address || 'You'} />
+
+
       </div>
     </div >
   );

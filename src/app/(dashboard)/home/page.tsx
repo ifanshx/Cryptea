@@ -44,7 +44,7 @@ const CAROUSEL_SLIDES: CarouselSlide[] = [
   },
   {
     name: "Tea in The House",
-    image: "/images/banner2.png",
+    image: "/images/comingsoon.png",
     status: Status.COMING_SOON,
     button: "Coming Soon",
     openseaSlug: "tea-in-the-house",
@@ -52,7 +52,7 @@ const CAROUSEL_SLIDES: CarouselSlide[] = [
   },
   {
     name: "Pink is Love",
-    image: "/images/banner3.png",
+    image: "/images/comingsoon.png",
     status: Status.COMING_SOON,
     button: "Coming Soon",
     openseaSlug: "pink-is-love",
@@ -127,7 +127,7 @@ const HomePage = () => {
       case Status.LIVE_GENERATE:
         return () => window.location.assign("/generate");
       default:
-        return () => {};
+        return () => { };
     }
   }, [currentSlide, handleOpenMint]);
 
@@ -157,11 +157,10 @@ const HomePage = () => {
               {currentSlide.name}
             </h2>
             <span
-              className={`inline-block mt-2 rounded-full px-3 md:px-4 py-1 text-sm md:text-base font-medium ${
-                currentSlide.status === Status.LIVE
-                  ? "bg-green-500/30 text-green-200"
-                  : "bg-gray-500/30 text-gray-200"
-              }`}
+              className={`inline-block mt-2 rounded-full px-3 md:px-4 py-1 text-sm md:text-base font-medium ${currentSlide.status === Status.LIVE
+                ? "bg-green-500/30 text-green-200"
+                : "bg-gray-500/30 text-gray-200"
+                }`}
             >
               {currentSlide.status}
             </span>
@@ -192,28 +191,25 @@ const HomePage = () => {
                 key={slide.openseaSlug}
                 onClick={() => handleThumbnailClick(slide)}
                 disabled={slide.status === Status.COMING_SOON}
-                className={`relative flex-shrink-0 w-24 h-15 sm:w-44 sm:h-28 md:h-32 md:w-90 rounded-lg overflow-hidden border-4 transition-all ${
-                  isActive ? "bg-white/20" : "border-transparent"
-                } ${
-                  slide.status === Status.COMING_SOON
+                className={`relative flex-shrink-0 w-24 h-15 sm:w-44 sm:h-28 md:h-32 md:w-90 rounded-lg overflow-hidden border-4 border-[#52c6a3] transition-all ${isActive ? "bg-white/20" : "border-transparent"
+                  } ${slide.status === Status.COMING_SOON
                     ? "opacity-50 cursor-not-allowed"
                     : ""
-                }`}
+                  }`}
                 aria-label={`View ${slide.name} collection`}
               >
                 <img
                   src={slide.image}
                   alt={slide.name}
-                  className={`w-full h-full object-cover transform transition-transform ${
-                    slide.status === Status.COMING_SOON
-                      ? "filter blur-sm"
-                      : "hover:scale-105"
-                  }`}
+                  className={`w-full h-full object-cover transform transition-transform ${slide.status === Status.COMING_SOON
+                    ? "filter blur-sm"
+                    : "hover:scale-105"
+                    }`}
                   loading="lazy"
                 />
                 {slide.status === Status.COMING_SOON && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-sm font-bold text-white bg-black bg-opacity-50 px-2 py-1 rounded">
+                    <span className="text-lg font-extrabold text-white ">
                       {Status.COMING_SOON}
                     </span>
                   </div>
@@ -276,11 +272,10 @@ const HomePage = () => {
                   <td className="px-6 py-4 text-gray-800">
                     {col.totalVolume}
                     <div
-                      className={`text-sm ${
-                        col.totalVolumeChange.startsWith("-")
-                          ? "text-red-600"
-                          : "text-green-600"
-                      }`}
+                      className={`text-sm ${col.totalVolumeChange.startsWith("-")
+                        ? "text-red-600"
+                        : "text-green-600"
+                        }`}
                     >
                       {col.totalVolumeChange}
                     </div>
