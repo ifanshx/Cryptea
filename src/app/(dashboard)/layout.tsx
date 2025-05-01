@@ -40,7 +40,11 @@ export default function DashboardLayout({
 
         <main
           className="flex-1 transition-all duration-300 bg-white shadow-inner"
-          style={{ marginLeft: isMobile ? 0 : sidebarOpen ? 250 : 80 }}
+          style={{
+            marginLeft: isMobile
+              ? 0
+              : `var(${sidebarOpen ? "--sidebar-width-open" : "--sidebar-width-closed"})`
+          }}
         >
           <Suspense fallback={<Loading />}>
             <div className="">{children}</div>

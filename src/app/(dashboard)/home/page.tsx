@@ -143,6 +143,7 @@ const HomePage = () => {
 
   return (
     <div className="space-y-8 container mx-auto px-1 py-1 ">
+
       {/* Main Carousel */}
       <div className="relative rounded-xl overflow-hidden group shadow-lg">
         <div className="relative h-48 sm:h-64 md:h-80 lg:h-96 transition-all duration-500">
@@ -172,11 +173,12 @@ const HomePage = () => {
             {currentSlide.button}
           </button>
         </div>
+        {showMintPopup && (
+          <MintPopup slide={currentSlide} onClose={handleCloseMint} />
+        )}
       </div>
 
-      {showMintPopup && (
-        <MintPopup slide={currentSlide} onClose={handleCloseMint} />
-      )}
+
 
       {/* Thumbnail Carousel */}
       <div className="overflow-x-auto scrollbar-hide">
