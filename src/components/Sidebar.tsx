@@ -5,8 +5,9 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { clsx } from 'clsx';
 import {
-  ArrowLeftRight,
-  Image,
+  // ArrowLeftRight,
+  // Image,
+  // Rainbow,
   LeafIcon,
   PartyPopper,
   RocketIcon,
@@ -18,9 +19,9 @@ const SIDEBAR_CLOSED_WIDTH = 'w-20'; // 5rem
 const NAV_ITEMS = [
   { name: 'Home', path: '/home', icon: RocketIcon },
   { name: 'Stake', path: '/stake', icon: LeafIcon },
-  { name: 'Swap', path: '/swap', icon: ArrowLeftRight },
+  // { name: 'Generate', path: '/generate', icon: Rainbow },
   { name: 'Raffle', path: '/raffle', icon: PartyPopper },
-  { name: 'Gallery', path: '/gallery', icon: Image },
+  // { name: 'Gallery', path: '/gallery', icon: Image },
 ];
 
 type SidebarProps = {
@@ -48,7 +49,7 @@ export default function Sidebar({
       {isMobile && isOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-30 z-40"
-          onClick={onClose}
+          // onClick={onClose}
           aria-hidden="true"
         />
       )}
@@ -96,7 +97,7 @@ export default function Sidebar({
                   isActive
                     ? 'bg-gray-100 font-semibold'
                     : 'hover:bg-gray-50 focus:bg-gray-100',
-                  'focus:outline-none focus:ring-2 focus:ring-blue-500'
+                  'focus:outline-none focus:ring-2 focus:ring-teal-500'
                 )}
               >
                 <div className="relative group">

@@ -1,7 +1,9 @@
 "use client";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import MintPopup from "@/components/MintPopup";
 import { useCarousel } from "@/hooks/useCarousel";
+import GeneratePopup from "@/components/GeneratePopup";
+
 
 // Local Enum dan Types
 enum Status {
@@ -18,6 +20,7 @@ interface CarouselSlide {
   button: string;
   openseaSlug: string;
   price: string;
+  assetFolder: string;
 }
 
 interface TrendingCollection {
@@ -37,10 +40,11 @@ const CAROUSEL_SLIDES: CarouselSlide[] = [
   {
     name: "Herbivores",
     image: "/images/banner.png",
-    status: Status.LIVE,
+    status: Status.LIVE_GENERATE,
     button: "Mint Collection",
     openseaSlug: "Herbivores",
-    price: "0.10 TEA",
+    assetFolder: "Herbivores",
+    price: "2",
   },
   {
     name: "Tea in The House",
@@ -48,15 +52,18 @@ const CAROUSEL_SLIDES: CarouselSlide[] = [
     status: Status.COMING_SOON,
     button: "Coming Soon",
     openseaSlug: "tea-in-the-house",
-    price: "0.20 TEA",
+    assetFolder: "tea-in-the-house",
+
+    price: "0.2",
   },
   {
-    name: "Pink is Love",
+    name: "Ethereal Entities",
     image: "/images/comingsoon.png",
     status: Status.COMING_SOON,
     button: "Coming Soon",
-    openseaSlug: "pink-is-love",
-    price: "0.15 TEA",
+    openseaSlug: "etehereal-entities",
+    assetFolder: "EtherealEntities",
+    price: "0.15",
   },
 ];
 
@@ -88,48 +95,40 @@ const TRENDING_COLLECTIONS: TrendingCollection[] = [
 ];
 
 const HomePage = () => {
-  const [showMintPopup, setShowMintPopup] = useState(false);
+  const [openPopup, setOpenPopup] = useState<"mint" | "generate" | null>(null);
 
-  // Hanya slide yang bukan Coming Soon
   const visibleSlides = CAROUSEL_SLIDES.filter(
     (slide) => slide.status !== Status.COMING_SOON
   );
-
   const { activeIndex, goToSlide, setIsAutoPlay } = useCarousel(
     visibleSlides.length,
     5000,
     10000,
-    showMintPopup
+    openPopup !== null
   );
-
   const currentSlide = visibleSlides[activeIndex];
 
-  useEffect(() => {
-    if (activeIndex >= visibleSlides.length) {
-      goToSlide(0);
-    }
-  }, [activeIndex, goToSlide, visibleSlides.length]);
-
-  const handleOpenMint = useCallback(() => {
-    setIsAutoPlay(false);
-    setShowMintPopup(true);
-  }, [setIsAutoPlay]);
-
-  const handleCloseMint = useCallback(() => {
-    setShowMintPopup(false);
+  const handleClosePopup = useCallback(() => {
+    setOpenPopup(null);
     setIsAutoPlay(true);
   }, [setIsAutoPlay]);
 
   const getButtonAction = useCallback(() => {
     switch (currentSlide.status) {
       case Status.LIVE:
-        return handleOpenMint;
+        return () => {
+          setIsAutoPlay(false);
+          setOpenPopup("mint");
+        };
       case Status.LIVE_GENERATE:
-        return () => window.location.assign("/generate");
+        return () => {
+          setIsAutoPlay(false);
+          setOpenPopup("generate");
+        };
       default:
         return () => { };
     }
-  }, [currentSlide, handleOpenMint]);
+  }, [currentSlide, setIsAutoPlay]);
 
   // Klik thumbnail hanya untuk slide aktif
   const handleThumbnailClick = (slide: CarouselSlide) => {
@@ -159,7 +158,7 @@ const HomePage = () => {
             </h2>
             <span
               className={`inline-block mt-2 rounded-full px-3 md:px-4 py-1 text-sm md:text-base font-medium ${currentSlide.status === Status.LIVE
-                ? "bg-green-500/30 text-green-200"
+                ? "bg-teal-500/30 text-green-200"
                 : "bg-gray-500/30 text-gray-200"
                 }`}
             >
@@ -173,8 +172,11 @@ const HomePage = () => {
             {currentSlide.button}
           </button>
         </div>
-        {showMintPopup && (
-          <MintPopup slide={currentSlide} onClose={handleCloseMint} />
+        {openPopup === "mint" && (
+          <MintPopup slide={currentSlide} onClose={handleClosePopup} />
+        )}
+        {openPopup === "generate" && (
+          <GeneratePopup slide={currentSlide} onClose={handleClosePopup} />
         )}
       </div>
 
