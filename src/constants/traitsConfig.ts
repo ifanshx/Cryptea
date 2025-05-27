@@ -1,6 +1,6 @@
 // constants/traitsConfig.ts
 
-import { METADATA_TRAITS as HERBIVORES_TRAITS } from "./Herbivores_traits";
+import { METADATA_TRAITS as HERBIVORES_TRAITS } from "./Herbivores/Herbivores_traits";
 
 import { METADATA_TRAITS as ETHEREALENTITIES_TRAITS } from "./EtherealEntities/EtherealEntities_traits";
 

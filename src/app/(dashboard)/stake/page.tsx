@@ -1,6 +1,7 @@
+// app/(routes)/stake/page.tsx
 "use client";
 
-import { useState, useEffect, useCallback, useMemo, useRef } from "react"; // Import useRef
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import {
   useAccount,
   useReadContracts,
@@ -29,6 +30,12 @@ interface NFT {
   name: string;
   isStaked: boolean;
   claimableReward?: bigint;
+}
+
+interface LeaderboardEntry {
+  address: string;
+  avatar: string; // Avatar harus ditentukan setelah fetching
+  amount: number;
 }
 
 // --- KONSTAN UNTUK PESAN TOAST ---
@@ -64,7 +71,7 @@ const StakePage = () => {
 
   // --- New state for global loading overlay ---
   const [showGlobalLoader, setShowGlobalLoader] = useState(false);
-  const [loaderMessage, setLoaderMessage] = useState("Processing transaction..."); // New state for loader message
+  const [loaderMessage, setLoaderMessage] = useState("Processing transaction...");
 
   // Refs to track previous transaction states for toasts
   const prevIsApproving = useRef(false);
@@ -72,28 +79,68 @@ const StakePage = () => {
   const prevIsUnstaking = useRef(false);
   const prevIsClaiming = useRef(false);
 
-  const staticLeaderboard = useMemo(
-    () => [
-      { address: "0x32...A5C4", avatar: "/assets/EtherealEntities.png", amount: 200000 },
-      { address: "0xAB...1234", avatar: "/assets/rabbits.png", amount: 20000 },
-      { address: "0xCD...5678", avatar: "/assets/EtherealEntities.png", amount: 2000 },
-      { address: "0xEF...9ABC", avatar: "/assets/rabbits.png", amount: 1000 },
-      { address: "0x01...2345", avatar: "/assets/EtherealEntities.png", amount: 900 },
-      { address: "0x67...8901", avatar: "/assets/rabbits.png", amount: 500 },
-      { address: "0x23...4567", avatar: "/assets/EtherealEntities.png", amount: 60 },
-      { address: "0x21...4537", avatar: "/assets/EtherealEntities.png", amount: 60 },
-      { address: "0x43...4127", avatar: "/assets/EtherealEntities.png", amount: 60 },
-    ],
-    []
-  );
+  // --- State baru untuk Leaderboard Data ---
+  const [realtimeLeaderboard, setRealtimeLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [isLoadingLeaderboard, setIsLoadingLeaderboard] = useState<boolean>(true);
+  const [errorLeaderboard, setErrorLeaderboard] = useState<string | null>(null);
 
-  const leaderboardData = useMemo(
-    () => [
-      ...staticLeaderboard,
-      { address: address || "", avatar: "/assets/EtherealEntities.2.png", amount: 7 },
-    ],
-    [staticLeaderboard, address]
-  );
+  // Fungsi untuk mengambil data leaderboard
+  const fetchLeaderboardData = useCallback(async () => {
+    setIsLoadingLeaderboard(true);
+    setErrorLeaderboard(null);
+    try {
+      const response = await fetch("/api/leaderboard"); // Panggil API Route leaderboard
+      if (!response.ok) {
+        throw new Error(`Failed to fetch leaderboard: ${response.statusText}`);
+      }
+      const data: Omit<LeaderboardEntry, 'avatar'>[] = await response.json();
+
+      // Tambahkan avatar placeholder atau logic untuk mendapatkan avatar di sini
+      // Untuk tujuan demo, kita pakai avatar static sementara
+      const processedData: LeaderboardEntry[] = data.map(entry => ({
+        ...entry,
+        avatar: entry.address === address ? "/assets/EtherealEntities.2.png" : "/assets/EtherealEntities.png" // Contoh avatar
+      }));
+      setRealtimeLeaderboard(processedData);
+    } catch (err: unknown) {
+      console.error("Error fetching leaderboard data:", err);
+      setErrorLeaderboard(
+        err instanceof Error ? err.message : "Failed to load leaderboard."
+      );
+    } finally {
+      setIsLoadingLeaderboard(false);
+    }
+  }, [address]); // Tambahkan address agar fetchLeaderboardData di-recreate jika address berubah
+
+  // useEffect untuk memanggil fetchLeaderboardData saat komponen mount dan secara berkala
+  useEffect(() => {
+    fetchLeaderboardData();
+    const interval = setInterval(fetchLeaderboardData, 30 * 1000); // Refresh setiap 30 detik
+    return () => clearInterval(interval); // Cleanup interval
+  }, [fetchLeaderboardData]);
+
+
+
+  // Gunakan realtimeLeaderboard yang di-fetch
+  const leaderboardData = useMemo(() => {
+    const finalLeaderboard = [...realtimeLeaderboard];
+
+    // Cek apakah alamat pengguna saat ini sudah ada di leaderboard
+    const userIsInLeaderboard = realtimeLeaderboard.some(
+      (entry) => entry.address.toLowerCase() === address?.toLowerCase()
+    );
+
+    // Jika pengguna terhubung dan belum ada di leaderboard yang di-fetch, tambahkan entry dummy
+    if (address && !userIsInLeaderboard) {
+      finalLeaderboard.push({
+        address: address,
+        avatar: "/assets/EtherealEntities.png", // Avatar untuk pengguna saat ini
+        amount: 0, // Jumlah default, akan diupdate jika ada data on-chain
+      });
+    }
+
+    return finalLeaderboard;
+  }, [realtimeLeaderboard, address]);
 
   useEffect(() => setSelectedNFTs([]), [activeTab]);
 
@@ -207,6 +254,7 @@ const StakePage = () => {
 
 
   // --- Watch contract events ---
+  // Pastikan Anda juga merefresh leaderboard saat ada event stake/unstake
   useWatchContractEvent({
     address: StakeNFTAddress,
     abi: StakeNFTABI,
@@ -214,6 +262,7 @@ const StakePage = () => {
     onLogs: () => {
       refetchStakedTokenIds();
       refetchEarnedRewards();
+      fetchLeaderboardData(); // <-- Tambahkan ini
     },
   });
 
@@ -224,6 +273,7 @@ const StakePage = () => {
     onLogs: () => {
       refetchStakedTokenIds();
       refetchEarnedRewards();
+      fetchLeaderboardData(); // <-- Tambahkan ini
     },
   });
 
@@ -234,6 +284,7 @@ const StakePage = () => {
     onLogs: () => {
       refetchStakedTokenIds();
       refetchEarnedRewards();
+      // fetchLeaderboardData(); // Klaim reward tidak selalu mengubah peringkat stake
     },
   });
 
@@ -283,7 +334,6 @@ const StakePage = () => {
       setTxHashes((prev) => ({ ...prev, approve: undefined }));
       setShowGlobalLoader(false);
     } else if (txHashes.approve && !isApproving && !isApproveConfirmed) {
-      // Handle approval transaction failure (e.g., user rejected or network error)
       showToast(TOAST_MESSAGES.APPROVAL_FAILED("Transaction failed or rejected."), "error");
       setTxHashes((prev) => ({ ...prev, approve: undefined }));
       setShowGlobalLoader(false);
@@ -298,6 +348,7 @@ const StakePage = () => {
       showToast(TOAST_MESSAGES.STAKE_CONFIRMED, "success");
       refetchStakedTokenIds();
       refetchEarnedRewards();
+      fetchLeaderboardData(); // Refresh leaderboard setelah stake
       setSelectedNFTs([]);
       setTxHashes((prev) => ({ ...prev, stake: undefined }));
       setShowGlobalLoader(false);
@@ -316,6 +367,7 @@ const StakePage = () => {
       showToast(TOAST_MESSAGES.UNSTAKE_CONFIRMED, "success");
       refetchStakedTokenIds();
       refetchEarnedRewards();
+      fetchLeaderboardData(); // Refresh leaderboard setelah unstake
       setSelectedNFTs([]);
       setTxHashes((prev) => ({ ...prev, unstake: undefined }));
       setShowGlobalLoader(false);
@@ -343,17 +395,16 @@ const StakePage = () => {
     }
     prevIsClaiming.current = isClaiming;
 
-    // If all transactions are settled and the loader is still showing, hide it
     if (!isAnyTxActive && showGlobalLoader && !isWritePending) {
       setShowGlobalLoader(false);
     }
 
   }, [
     isApproving, isApproveConfirmed, txHashes.approve, refetchApproval,
-    isStaking, isStakeConfirmed, txHashes.stake, refetchStakedTokenIds, refetchEarnedRewards, setSelectedNFTs,
+    isStaking, isStakeConfirmed, txHashes.stake, refetchStakedTokenIds, refetchEarnedRewards, setSelectedNFTs, fetchLeaderboardData, // Added fetchLeaderboardData
     isUnstaking, isUnstakeConfirmed, txHashes.unstake,
     isClaiming, isClaimConfirmed, txHashes.claim,
-    showToast, setShowGlobalLoader, setLoaderMessage, isAnyTxActive, isWritePending // Added dependencies
+    showToast, setShowGlobalLoader, setLoaderMessage, isAnyTxActive, isWritePending
   ]);
 
 
@@ -406,7 +457,6 @@ const StakePage = () => {
         onSuccess: (hash) => {
           setTxHashes((prev) => ({ ...prev, stake: hash }));
           showToast(TOAST_MESSAGES.TX_SUBMITTED, "info");
-          // setSelectedNFTs([]); // Moved to useEffect for confirmation
         },
         onError: (error) => {
           showToast(error.message || TOAST_MESSAGES.STAKE_FAILED(""), "error");
@@ -438,7 +488,6 @@ const StakePage = () => {
         onSuccess: (hash) => {
           setTxHashes((prev) => ({ ...prev, unstake: hash }));
           showToast(TOAST_MESSAGES.TX_SUBMITTED, "info");
-          // setSelectedNFTs([]); // Moved to useEffect for confirmation
         },
         onError: (error) => {
           showToast(error.message || TOAST_MESSAGES.UNSTAKE_FAILED(""), "error");
@@ -470,7 +519,7 @@ const StakePage = () => {
         onSuccess: (hash) => {
           setTxHashes((prev) => ({ ...prev, claim: hash }));
           showToast(TOAST_MESSAGES.TX_SUBMITTED, "info");
-          setSelectedNFTs([]); // Moved to useEffect for confirmation
+          setSelectedNFTs([]);
         },
         onError: (error) => {
           showToast(error.message || TOAST_MESSAGES.CLAIM_FAILED(""), "error");
@@ -562,7 +611,7 @@ const StakePage = () => {
               </div>
 
               {filteredNFTs.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4 p-5  max-h-[600px] sm:max-h-[700px] overflow-y-auto">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4 p-5  max-h-[600px] sm:max-h-[700px] overflow-y-auto">
                   {filteredNFTs.map((nft) => (
                     <StakeCard
                       key={nft.id}
@@ -653,7 +702,12 @@ const StakePage = () => {
           </div>
 
           {/* Leaderboard */}
-          <LeaderboardSticky leaderboard={leaderboardData} currentAddress={address || 'You'} />
+          <LeaderboardSticky
+            leaderboard={leaderboardData} // Gunakan data leaderboard yang di-fetch
+            currentAddress={address || 'You'}
+            isLoading={isLoadingLeaderboard} // Kirim state loading
+            error={errorLeaderboard} // Kirim state error
+          />
         </div>
       </div>
     </>

@@ -10,7 +10,7 @@ import {
     useWriteContract,
 } from "wagmi";
 import { parseEther } from "viem";
-import { Images, Loader, Sparkles } from "lucide-react";
+import { Images, Loader, Shuffle, Sparkles } from "lucide-react";
 
 import { PinataSDK } from "pinata";
 import { useToast } from "@/context/ToastContext";
@@ -385,9 +385,9 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
                                     <button
                                         key={trait}
                                         onClick={() => setActiveTrait(trait)}
-                                        className={`px-3 py-2 rounded-lg text-sm font-medium transition focus:outline-none ${activeTrait === trait
-                                            ? "bg-teal-500 text-white shadow-lg"
-                                            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-teal-400 ${activeTrait === trait
+                                            ? "bg-teal-500 text-white shadow-md transform scale-105"
+                                            : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                                             }`}
                                     >
                                         {trait}
@@ -427,10 +427,13 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
                                             className="w-full h-full object-cover rounded-lg"
                                         />
                                         {selectedTraits[activeTrait] === asset && (
-                                            <div className="absolute top-2 right-2 bg-teal-500 text-white px-2 py-1 rounded-full text-xs">
-                                                ✓
+                                            <div className="absolute top-2 right-2 bg-teal-500 text-white p-1 rounded-full text-xs animate-bounce-in shadow-md">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                </svg>
                                             </div>
                                         )}
+
                                     </button>
                                 ))}
                             </div>
@@ -439,13 +442,13 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
                         {/* Panel Pratinjau Gambar dan Randomize */}
                         <div className="bg-white w-full md:w-1/2 p-4 sm:p-6 flex flex-col gap-4 rounded-xl shadow-lg flex-shrink-0 max-h-none md:max-h-full">
                             <div className="aspect-square bg-white rounded-2xl overflow-hidden flex items-center justify-center">
-                                {isComposing ? (
-                                    <div className="flex flex-col items-center animate-pulse space-y-4">
-                                        <Loader className="w-10 h-10 text-teal-500 animate-spin" />
-                                        <p className="text-gray-500">Assembling your unique NFT...</p>
+                                {isComposing || isRandomizing ? (
+                                    <div className="flex flex-col items-center space-y-4 text-gray-600 dark:text-gray-300 animate-pulse">
+                                        <Loader className="w-12 h-12 text-teal-500 animate-spin" />
+                                        <p className="text-base font-medium">Assembling your unique NFT...</p>
                                     </div>
                                 ) : previewImage.length ? (
-                                    <div className="relative w-full h-full">
+                                    <div className="relative w-full h-full animate-fade-in-up">
                                         {previewImage.map((src, i) => (
                                             <img
                                                 key={i}
@@ -457,23 +460,26 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="flex flex-col items-center space-y-3">
-                                        <Sparkles className="w-12 h-12 text-teal-200" />
-                                        <p className="text-gray-400">Select traits to begin customizing!</p>
+                                    <div className="flex flex-col items-center space-y-4 text-gray-400 dark:text-gray-500">
+                                        <Sparkles className="w-16 h-16 text-teal-300 animate-pulse" />
+                                        <p className="text-base text-center">Select traits or randomize to begin customizing your NFT!</p>
                                     </div>
                                 )}
                             </div>
                             <button
                                 onClick={handleRandomize}
                                 disabled={isGenerating}
-                                className="w-full bg-teal-500 text-white font-semibold py-2 px-4 rounded-lg shadow-lg transition duration-200 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-300 flex items-center justify-center"
+                                className="w-full bg-gradient-to-r from-teal-500 to-blue-500 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition duration-300 hover:from-teal-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-teal-400 flex items-center justify-center gap-2 transform active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
                             >
                                 {isRandomizing ? (
-                                    <Loader className="animate-spin mr-2" size={18} />
+                                    <>
+                                        <Loader className="animate-spin mr-2" size={20} /> Randomizing...
+                                    </>
                                 ) : (
-                                    "🎲"
+                                    <>
+                                        <Shuffle size={20} /> Randomize
+                                    </>
                                 )}
-                                Randomize
                             </button>
                         </div>
                     </div>
@@ -544,9 +550,15 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
                             onClick={handleMint}
                             disabled={!isConnected || isMinting || !previewImage.length}
                             aria-busy={isMinting}
-                            className="w-full bg-white text-gray-900 rounded-lg py-2 font-bold hover:bg-gray-100 transition"
+                            className="w-full bg-gradient-to-r from-green-500 to-teal-600 text-white text-xl font-bold py-3 rounded-xl shadow-lg transition-all duration-300 hover:from-green-600 hover:to-teal-700 focus:outline-none focus:ring-4 focus:ring-green-400/50 flex items-center justify-center gap-3 transform active:scale-98 disabled:opacity-40 disabled:cursor-not-allowed"
                         >
-                            {isMinting ? "Minting..." : "Mint"}
+                            {isMinting ? (
+                                <>
+                                    <Loader className="animate-spin" size={24} /> Minting...
+                                </>
+                            ) : (
+                                "Mint Your NFT"
+                            )}
                         </button>
 
                         {/* Progress Bar Supply */}
