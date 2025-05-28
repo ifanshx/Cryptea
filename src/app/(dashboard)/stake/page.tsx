@@ -13,7 +13,7 @@ import {
 import { formatEther } from "viem";
 import StakeCard from "@/components/StakeCard";
 
-import { useToast } from "@/context/ToastContext";
+import { useToast } from "@/context/ToastContext"; // Sesuaikan path jika berbeda
 import {
   HerbivoresAddress,
   HerbivoresABI,
@@ -22,6 +22,7 @@ import {
 } from "@/constants/ContractAbi";
 import { Loader, Sparkles, Wallet } from "lucide-react";
 import LeaderboardSticky from "@/components/LeaderboardSticky";
+import LoadingSpinner from "@/components/LoadingSekleton";
 
 interface NFT {
   id: string;
@@ -55,11 +56,11 @@ const TOAST_MESSAGES = {
 };
 
 const StakePage = () => {
-  const { showToast } = useToast();
+  const { addToast } = useToast(); // Menggunakan useToast dari context
+
   const { address } = useAccount();
   const [activeTab, setActiveTab] = useState<"owned" | "staked">("owned");
   const [selectedNFTs, setSelectedNFTs] = useState<number[]>([]);
-  const [totalPendingRewards, setTotalPendingRewards] = useState("0");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<"newest" | "id">("newest");
   const [txHashes, setTxHashes] = useState<{
@@ -118,8 +119,6 @@ const StakePage = () => {
     const interval = setInterval(fetchLeaderboardData, 30 * 1000); // Refresh setiap 30 detik
     return () => clearInterval(interval); // Cleanup interval
   }, [fetchLeaderboardData]);
-
-
 
   // Gunakan realtimeLeaderboard yang di-fetch
   const leaderboardData = useMemo(() => {
@@ -207,7 +206,6 @@ const StakePage = () => {
     query: { enabled: !!address },
   });
 
-
   // Fetch individual earned rewards for staked NFTs
   const {
     data: earnedRewardsResults,
@@ -252,6 +250,16 @@ const StakePage = () => {
     });
   }, [stakedTokenIds, earnedRewardsResults]);
 
+  // Calculate total pending rewards for selected staked NFTs
+  const totalPendingRewards = useMemo(() => {
+    const total = selectedNFTs.reduce((acc, tokenId) => {
+      const nft = stakedNFTs.find((sNft) => sNft.tokenId === tokenId);
+      return nft && nft.claimableReward !== undefined
+        ? acc + Number(formatEther(nft.claimableReward))
+        : acc;
+    }, 0);
+    return total.toFixed(4);
+  }, [selectedNFTs, stakedNFTs]);
 
   // --- Watch contract events ---
   // Pastikan Anda juga merefresh leaderboard saat ada event stake/unstake
@@ -288,15 +296,6 @@ const StakePage = () => {
     },
   });
 
-  useEffect(() => {
-    const total = selectedNFTs.reduce((acc, tokenId) => {
-      const nft = stakedNFTs.find((sNft) => sNft.tokenId === tokenId);
-      return nft && nft.claimableReward !== undefined
-        ? acc + Number(formatEther(nft.claimableReward))
-        : acc;
-    }, 0);
-    setTotalPendingRewards(total.toFixed(4));
-  }, [selectedNFTs, stakedNFTs]);
 
   // --- Contract writes ---
   const { writeContract, isPending: isWritePending } = useWriteContract();
@@ -329,12 +328,12 @@ const StakePage = () => {
       setShowGlobalLoader(true);
       setLoaderMessage("Approving collection...");
     } else if (isApproveConfirmed) {
-      showToast(TOAST_MESSAGES.APPROVAL_CONFIRMED, "success");
+      addToast({ message: TOAST_MESSAGES.APPROVAL_CONFIRMED, type: "success" });
       refetchApproval();
       setTxHashes((prev) => ({ ...prev, approve: undefined }));
       setShowGlobalLoader(false);
     } else if (txHashes.approve && !isApproving && !isApproveConfirmed) {
-      showToast(TOAST_MESSAGES.APPROVAL_FAILED("Transaction failed or rejected."), "error");
+      addToast({ message: TOAST_MESSAGES.APPROVAL_FAILED("Transaction failed or rejected."), type: "error" });
       setTxHashes((prev) => ({ ...prev, approve: undefined }));
       setShowGlobalLoader(false);
     }
@@ -345,7 +344,7 @@ const StakePage = () => {
       setShowGlobalLoader(true);
       setLoaderMessage("Staking NFTs...");
     } else if (isStakeConfirmed) {
-      showToast(TOAST_MESSAGES.STAKE_CONFIRMED, "success");
+      addToast({ message: TOAST_MESSAGES.STAKE_CONFIRMED, type: "success" });
       refetchStakedTokenIds();
       refetchEarnedRewards();
       fetchLeaderboardData(); // Refresh leaderboard setelah stake
@@ -353,7 +352,7 @@ const StakePage = () => {
       setTxHashes((prev) => ({ ...prev, stake: undefined }));
       setShowGlobalLoader(false);
     } else if (txHashes.stake && !isStaking && !isStakeConfirmed) {
-      showToast(TOAST_MESSAGES.STAKE_FAILED("Transaction failed or rejected."), "error");
+      addToast({ message: TOAST_MESSAGES.STAKE_FAILED("Transaction failed or rejected."), type: "error" });
       setTxHashes((prev) => ({ ...prev, stake: undefined }));
       setShowGlobalLoader(false);
     }
@@ -364,7 +363,7 @@ const StakePage = () => {
       setShowGlobalLoader(true);
       setLoaderMessage("Unstaking NFTs...");
     } else if (isUnstakeConfirmed) {
-      showToast(TOAST_MESSAGES.UNSTAKE_CONFIRMED, "success");
+      addToast({ message: TOAST_MESSAGES.UNSTAKE_CONFIRMED, type: "success" });
       refetchStakedTokenIds();
       refetchEarnedRewards();
       fetchLeaderboardData(); // Refresh leaderboard setelah unstake
@@ -372,7 +371,7 @@ const StakePage = () => {
       setTxHashes((prev) => ({ ...prev, unstake: undefined }));
       setShowGlobalLoader(false);
     } else if (txHashes.unstake && !isUnstaking && !isUnstakeConfirmed) {
-      showToast(TOAST_MESSAGES.UNSTAKE_FAILED("Transaction failed or rejected."), "error");
+      addToast({ message: TOAST_MESSAGES.UNSTAKE_FAILED("Transaction failed or rejected."), type: "error" });
       setTxHashes((prev) => ({ ...prev, unstake: undefined }));
       setShowGlobalLoader(false);
     }
@@ -383,13 +382,13 @@ const StakePage = () => {
       setShowGlobalLoader(true);
       setLoaderMessage("Claiming rewards...");
     } else if (isClaimConfirmed) {
-      showToast(TOAST_MESSAGES.CLAIM_CONFIRMED, "success");
+      addToast({ message: TOAST_MESSAGES.CLAIM_CONFIRMED, type: "success" });
       refetchEarnedRewards();
       setSelectedNFTs([]);
       setTxHashes((prev) => ({ ...prev, claim: undefined }));
       setShowGlobalLoader(false);
     } else if (txHashes.claim && !isClaiming && !isClaimConfirmed) {
-      showToast(TOAST_MESSAGES.CLAIM_FAILED("Transaction failed or rejected."), "error");
+      addToast({ message: TOAST_MESSAGES.CLAIM_FAILED("Transaction failed or rejected."), type: "error" });
       setTxHashes((prev) => ({ ...prev, claim: undefined }));
       setShowGlobalLoader(false);
     }
@@ -404,14 +403,14 @@ const StakePage = () => {
     isStaking, isStakeConfirmed, txHashes.stake, refetchStakedTokenIds, refetchEarnedRewards, setSelectedNFTs, fetchLeaderboardData, // Added fetchLeaderboardData
     isUnstaking, isUnstakeConfirmed, txHashes.unstake,
     isClaiming, isClaimConfirmed, txHashes.claim,
-    showToast, setShowGlobalLoader, setLoaderMessage, isAnyTxActive, isWritePending
+    addToast, setShowGlobalLoader, setLoaderMessage, isAnyTxActive, isWritePending
   ]);
 
 
   // --- Approval handler ---
   const handleApprove = useCallback(() => {
     if (!address) {
-      showToast(TOAST_MESSAGES.CONNECT_WALLET, "error");
+      addToast({ message: TOAST_MESSAGES.CONNECT_WALLET, type: "error" });
       return;
     }
 
@@ -425,24 +424,25 @@ const StakePage = () => {
       {
         onSuccess: (hash) => {
           setTxHashes((prev) => ({ ...prev, approve: hash }));
-          showToast(TOAST_MESSAGES.TX_SUBMITTED, "info");
+          addToast({ message: TOAST_MESSAGES.TX_SUBMITTED, type: "info" });
         },
         onError: (error) => {
-          showToast(error.message || TOAST_MESSAGES.APPROVAL_FAILED(""), "error");
+          // Changed to consistent object format
+          addToast({ message: error.message || TOAST_MESSAGES.APPROVAL_FAILED(""), type: "error" });
         },
       }
     );
-  }, [address, writeContract, showToast]);
+  }, [address, writeContract, addToast]);
 
   // --- Stake handler ---
   const handleStake = useCallback(() => {
     if (!address) {
-      showToast(TOAST_MESSAGES.CONNECT_WALLET, "error");
+      addToast({ message: TOAST_MESSAGES.CONNECT_WALLET, type: "error" }); // Changed to consistent object format
       return;
     }
 
     if (!selectedNFTs.length) {
-      showToast(TOAST_MESSAGES.NO_NFT_SELECTED, "warning");
+      addToast({ message: TOAST_MESSAGES.NO_NFT_SELECTED, type: "warning" }); // Changed to consistent object format
       return;
     }
 
@@ -456,24 +456,25 @@ const StakePage = () => {
       {
         onSuccess: (hash) => {
           setTxHashes((prev) => ({ ...prev, stake: hash }));
-          showToast(TOAST_MESSAGES.TX_SUBMITTED, "info");
+          addToast({ message: TOAST_MESSAGES.TX_SUBMITTED, type: "info" }); // Changed to consistent object format
         },
         onError: (error) => {
-          showToast(error.message || TOAST_MESSAGES.STAKE_FAILED(""), "error");
+          // Changed to consistent object format
+          addToast({ message: error.message || TOAST_MESSAGES.STAKE_FAILED(""), type: "error" });
         },
       }
     );
-  }, [address, writeContract, selectedNFTs, showToast]);
+  }, [address, writeContract, selectedNFTs, addToast]);
 
   // --- Unstake handler ---
   const handleUnstake = useCallback(() => {
     if (!address) {
-      showToast(TOAST_MESSAGES.CONNECT_WALLET, "error");
+      addToast({ message: TOAST_MESSAGES.CONNECT_WALLET, type: "error" }); // Changed to consistent object format
       return;
     }
 
     if (!selectedNFTs.length) {
-      showToast(TOAST_MESSAGES.NO_NFT_SELECTED, "warning");
+      addToast({ message: TOAST_MESSAGES.NO_NFT_SELECTED, type: "warning" }); // Changed to consistent object format
       return;
     }
 
@@ -487,24 +488,25 @@ const StakePage = () => {
       {
         onSuccess: (hash) => {
           setTxHashes((prev) => ({ ...prev, unstake: hash }));
-          showToast(TOAST_MESSAGES.TX_SUBMITTED, "info");
+          addToast({ message: TOAST_MESSAGES.TX_SUBMITTED, type: "info" }); // Changed to consistent object format
         },
         onError: (error) => {
-          showToast(error.message || TOAST_MESSAGES.UNSTAKE_FAILED(""), "error");
+          // Changed to consistent object format
+          addToast({ message: error.message || TOAST_MESSAGES.UNSTAKE_FAILED(""), type: "error" });
         },
       }
     );
-  }, [address, writeContract, selectedNFTs, showToast]);
+  }, [address, writeContract, selectedNFTs, addToast]);
 
   // --- Claim handler ---
   const handleClaim = useCallback(() => {
     if (!address) {
-      showToast(TOAST_MESSAGES.CONNECT_WALLET, "error");
+      addToast({ message: TOAST_MESSAGES.CONNECT_WALLET, type: "error" }); // Changed to consistent object format
       return;
     }
 
     if (!selectedNFTs.length) {
-      showToast(TOAST_MESSAGES.NO_NFT_SELECTED, "warning");
+      addToast({ message: TOAST_MESSAGES.NO_NFT_SELECTED, type: "warning" }); // Changed to consistent object format
       return;
     }
 
@@ -518,15 +520,16 @@ const StakePage = () => {
       {
         onSuccess: (hash) => {
           setTxHashes((prev) => ({ ...prev, claim: hash }));
-          showToast(TOAST_MESSAGES.TX_SUBMITTED, "info");
+          addToast({ message: TOAST_MESSAGES.TX_SUBMITTED, type: "info" }); // Changed to consistent object format
           setSelectedNFTs([]);
         },
         onError: (error) => {
-          showToast(error.message || TOAST_MESSAGES.CLAIM_FAILED(""), "error");
+          // Changed to consistent object format
+          addToast({ message: error.message || TOAST_MESSAGES.CLAIM_FAILED(""), type: "error" });
         },
       }
     );
-  }, [address, writeContract, selectedNFTs, showToast]);
+  }, [address, writeContract, selectedNFTs, addToast]);
 
 
   // --- Filter & sort ---
@@ -551,8 +554,8 @@ const StakePage = () => {
       {/* --- Global Loading Overlay --- */}
       {showGlobalLoader && (
         <div className="fixed inset-0 z-[100] bg-black/70 flex flex-col items-center justify-center text-white text-lg">
-          <Loader className="w-12 h-12 text-teal-400 animate-spin mb-4" />
-          <p>{loaderMessage}</p>
+          <LoadingSpinner fullScreen={false} message={loaderMessage} />
+
           <p className="text-sm text-gray-300 mt-2">Please wait, this might take a moment.</p>
         </div>
       )}
@@ -651,7 +654,7 @@ const StakePage = () => {
                         disabled={!selectedNFTs.length || isAnyTxActive || isWritePending}
                         className="mt-4 bg-teal-500 text-white rounded-full px-8 py-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        {isStaking || (isWritePending && txHashes.stake) ? <Loader className="w-5 h-5 animate-spin" /> : 'Stake'}
+                        {isStaking || (isWritePending && txHashes.stake) ? <Loader className="w-5 h-5 animate-spin" /> : 'Stake Selected'}
                       </button>
                     </>
                   ) : (
@@ -660,44 +663,46 @@ const StakePage = () => {
                       className="mt-4 bg-teal-500 text-white rounded-full px-8 py-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
                       disabled={isAnyTxActive || isWritePending}
                     >
-                      {isApproving || (isWritePending && txHashes.approve) ? <Loader className="w-5 h-5 animate-spin" /> : 'Approve'}
+                      {isApproving || (isWritePending && txHashes.approve) ? <Loader className="w-5 h-5 animate-spin" /> : 'Approve Collection'}
                     </button>
                   )}
                 </div>
               )}
 
               {activeTab === "staked" && (
-                <div className="bg-white rounded-2xl shadow p-6 flex flex-col justify-between items-center">
-                  <span className="text-gray-500 text-sm">Unstake Options</span>
-                  <span className="text-3xl font-bold text-gray-900 mt-2">
-                    {selectedNFTs.length} NFT{selectedNFTs.length !== 1 && 's'}
-                  </span>
-                  <button
-                    onClick={handleUnstake}
-                    disabled={!selectedNFTs.length || isAnyTxActive || isWritePending}
-                    className="mt-4 bg-teal-500 text-white rounded-full px-8 py-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isUnstaking || (isWritePending && txHashes.unstake) ? <Loader className="w-5 h-5 animate-spin" /> : 'Unstake'}
-                  </button>
-                </div>
+                <>
+                  <div className="bg-white rounded-2xl shadow p-6 flex flex-col justify-between items-center">
+                    <span className="text-gray-500 text-sm">Unstake Options</span>
+                    <span className="text-3xl font-bold text-gray-900 mt-2">
+                      {selectedNFTs.length} NFT{selectedNFTs.length !== 1 && 's'}
+                    </span>
+                    <button
+                      onClick={handleUnstake}
+                      disabled={!selectedNFTs.length || isAnyTxActive || isWritePending}
+                      className="mt-4 bg-teal-500 text-white rounded-full px-8 py-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isUnstaking || (isWritePending && txHashes.unstake) ? <Loader className="w-5 h-5 animate-spin" /> : 'Unstake Selected'}
+                    </button>
+                  </div>
+
+                  {/* Bagian Total Pending Rewards - Hanya muncul saat activeTab === "staked" */}
+                  <div className="bg-white rounded-2xl shadow p-6 flex flex-col justify-between items-center">
+                    <div className="flex flex-col">
+                      <span className="text-gray-500 text-sm">Total Pending Rewards</span>
+                      <span className="text-3xl font-bold text-gray-900 mt-2">
+                        {totalPendingRewards} CTEA
+                      </span>
+                    </div>
+                    <button
+                      onClick={handleClaim}
+                      disabled={!selectedNFTs.length || parseFloat(totalPendingRewards) === 0 || isAnyTxActive || isWritePending}
+                      className="mt-4 bg-teal-500 text-white rounded-full px-8 py-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isClaiming || (isWritePending && txHashes.claim) ? <Loader className="w-5 h-5 animate-spin" /> : 'Claim Rewards'}
+                    </button>
+                  </div>
+                </>
               )}
-
-
-              <div className="bg-white rounded-2xl shadow p-6 flex justify-between items-center">
-                <div className="flex flex-col">
-                  <span className="text-gray-500 text-sm">Total Pending Rewards</span>
-                  <span className="text-3xl font-bold text-gray-900 mt-2">
-                    {totalPendingRewards} CTEA
-                  </span>
-                </div>
-                <button
-                  onClick={handleClaim}
-                  disabled={!selectedNFTs.length || isAnyTxActive || isWritePending}
-                  className="mt-4 bg-teal-500 text-white rounded-full px-8 py-2 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isClaiming || (isWritePending && txHashes.claim) ? <Loader className="w-5 h-5 animate-spin" /> : 'Claim'}
-                </button>
-              </div>
             </div>
           </div>
 

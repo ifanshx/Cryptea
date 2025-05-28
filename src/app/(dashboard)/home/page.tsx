@@ -64,6 +64,7 @@ const CAROUSEL_SLIDES: CarouselSlide[] = [
     assetFolder: "EtherealEntities",
     price: "0.15",
   },
+  
 ];
 
 const HomePage = () => {

@@ -1,55 +1,56 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
-import Toast from "@/components/Toast";
+import React, { useState, useCallback, useRef } from 'react';
+import Toast, { ToastProps } from '../components/Toast'; // Import ToastProps dari Toast
 
-type ToastType = "success" | "error" | "warning" | "info";
+// Tambahkan type untuk toast yang menunggu (misal, untuk antrian)
+export type ToastItem = Omit<ToastProps, 'onClose' | 'id'> & { id: string };
 
-interface ToastContextProps {
-  showToast: (message: string, type?: ToastType) => void;
+interface ToastContextType {
+  addToast: (toast: Omit<ToastItem, 'id'>) => void;
 }
 
-interface ToastState {
-  isVisible: boolean;
-  message: string;
-  type: ToastType;
-}
+// Buat Context untuk Toast
+const ToastContext = React.createContext<ToastContextType | undefined>(undefined);
 
-const ToastContext = createContext<ToastContextProps | undefined>(undefined);
+// Hook kustom untuk menggunakan fungsionalitas toast
+export const useToast = () => {
+  const context = React.useContext(ToastContext);
+  if (!context) {
+    throw new Error('useToast must be used within a ToastProvider');
+  }
+  return context;
+};
 
 interface ToastProviderProps {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
 export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
-  const [toast, setToast] = useState<ToastState>({
-    isVisible: false,
-    message: "",
-    type: "info",
-  });
+  const [toasts, setToasts] = useState<ToastItem[]>([]);
+  const toastIdCounter = useRef(0);
 
-  const showToast = (message: string, type: ToastType = "info") => {
-    setToast({ isVisible: true, message, type });
-  };
+  const addToast = useCallback((toast: Omit<ToastItem, 'id'>) => {
+    const newId = `toast-${toastIdCounter.current++}`;
+    setToasts((prevToasts) => [...prevToasts, { ...toast, id: newId }]);
+  }, []);
 
-  const hideToast = () => {
-    setToast((prev) => ({ ...prev, isVisible: false }));
-  };
+  const removeToast = useCallback((id: string) => {
+    setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== id));
+  }, []);
 
   return (
-    <ToastContext.Provider value={{ showToast }}>
+    <ToastContext.Provider value={{ addToast }}>
       {children}
-      {toast.isVisible && (
-        <Toast message={toast.message} type={toast.type} onClose={hideToast} />
-      )}
+      <div className="fixed top-4 right-4 z-50 flex flex-col space-y-3">
+        {toasts.map((toast) => (
+          <Toast
+            key={toast.id}
+            {...toast}
+            onClose={removeToast}
+          />
+        ))}
+      </div>
     </ToastContext.Provider>
   );
-};
-
-export const useToast = (): ToastContextProps => {
-  const context = useContext(ToastContext);
-  if (!context) {
-    throw new Error("useToast must be used within a ToastProvider");
-  }
-  return context;
 };

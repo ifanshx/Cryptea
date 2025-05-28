@@ -1,3 +1,4 @@
+// components/GeneratePopup.tsx
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -10,21 +11,26 @@ import {
     useWriteContract,
 } from "wagmi";
 import { parseEther } from "viem";
-import { Images, Loader, Shuffle, Sparkles } from "lucide-react";
+import { Images, Loader, Shuffle, Sparkles, } from "lucide-react"; // Import X untuk tombol tutup popup
 
 import { PinataSDK } from "pinata";
-import { useToast } from "@/context/ToastContext";
+import { useToast } from "@/context/ToastContext"; // Sesuaikan path jika berbeda
 import { METADATA_TRAITS } from "@/constants/Herbivores/Herbivores_traits";
 import { HerbivoresABI, HerbivoresAddress } from "@/constants/ContractAbi";
+import LoadingSpinner from "@/components/LoadingSekleton"; // Import komponen LoadingSpinner yang sudah disempurnakan
 
-// Inisialisasi Pinata SDK
+// =================================================================
+// NOTE PENTING:
+// Pinata JWT harus disimpan di sisi server (misal: di API Route Next.js).
+// Mengekspos JWT di client-side adalah risiko keamanan yang serius.
+// Untuk tujuan demonstrasi dan perbaikan, JWT tetap di sini,
+// TAPI HARAP PINDAHKAN KE BACKEND SESUAI BEST PRACTICE KEAMANAN!
+// =================================================================
 const pinata = new PinataSDK({
-
-    pinataJwt: process.env.NEXT_PUBLIC_PINATA_JWT || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJhZGM4OGQ0OC0wMDg4LTRjMmMtOGIxMS01NjRkODQxZTMwYzAiLCJlbWFpbCI6ImlyZmFhbnNob29kaXExOTU0QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwaW5fcG9saWN5Ijp7InJlZ2lvbnMiOlt7ImRlc2lyZWRSZXBsaWNhdGlvbkNvdW50IjoxLCJpZCI6IkZSQTEifV0sInZlcnNpb24iOjF9LCJtZmFfZW5hYmxlZCI6ZmFsc2UsInN0YXR1cyI6IkFDVElWRSJ9LCJhdXRoZW50aWNhdGlvblR5cGUiOiJzY29wZWRLZXkiLCJzY29wZWRLZXlLZXkiOiI1ZmRkZjMxZTA2NDY3NmUzYzNmOSIsInNjb3BlZEtleVNlY3JldCI6IjUwZWJlY2ZkYzhiNGQwMmJlOGFjOTQ3MzhiNGY5ZWJlMmE1MjczZGVmN2M0ODIyZjBmN2EyOGI2Nzc0NjZmNmIiLCJleHAiOjE3Nzk3Mjg4MjV9.OznvnGrfq_ztmcQwJ06wnGWHP2DiodSwG6dKNxuDQ14",
-
+    pinataJwt: process.env.NEXT_PUBLIC_PINATA_JWT || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJhZGM4OGQ0OC0wMDg4LTRjMmMtOGIxMS01NjRkODQxZTMwYzAiLCJlbWFpbCI6ImlyZmFhbnNob29kaXExOTU0QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwaW5fcG9saWN5Ijp7InJlZ2lvbnMiOlt7ImRlc2lyZWRSZXBsaWNhdGlvbkNvdW50IjoxLCJpZCI6IkZSQTEifV0sInZlcnNpb24iOjF9LCJtZmFfZW5hYmxlZCI6ZmFsc2UsInN0YXR1cyI6IkFDVElWRSJ9LCJhdXRoZW50aWNhdGlvblR5cGUiOiJzY29wZWRLZXkiLCJzY29wZWRLZXlLZXkiOiI1ZmRkZjMxZTA2NDY3NjBlM2MzZjkiLCJzY29wZWRLZXlTZWNyZXQiOiI1MGViZWNmZDhjYjRkMDJiZThhYzk0NzM4YjRmOWViZTJhNTI3M2RlZjdjNDgyMmYwZjdhMjhiNjc3NDY2ZjZiYiIsImV4cCI6MTc3OTcyODgyNX0.OznvnGrfq_ztmcQwJ06wnGWHP2DiodSwG6dKNxuDQ14",
     pinataGateway: "red-equivalent-hawk-791.mypinata.cloud",
-
 });
+
 // Tipe untuk trait
 type TraitType = keyof typeof METADATA_TRAITS;
 type SelectedTraits = Record<TraitType, string>;
@@ -43,7 +49,7 @@ const LAYER_ORDER: TraitType[] = [
 const getOrderedTraits = (): TraitType[] =>
     LAYER_ORDER.filter((t) => t in METADATA_TRAITS) as TraitType[];
 
-// Enum untuk status carousel (tidak diubah, ini sudah baik)
+// Enum untuk status carousel (tidak diubah)
 enum Status {
     LIVE = "Live",
     FINISH = "Finish",
@@ -73,21 +79,22 @@ const TOAST_MESSAGES = {
     CONNECT_WALLET: "Please connect your wallet first.",
     INSUFFICIENT_BALANCE: "Insufficient balance to mint this NFT.",
     MAX_SUPPLY_REACHED: "Max supply reached for this collection.",
-    MISSING_TRAITS: (missing: string[]) => `Please select: ${missing.join(", ")}.`,
-    UPLOADING_IMAGE: "Uploading image to IPFS...",
-    UPLOADING_METADATA: "Uploading metadata to IPFS...",
+    MISSING_TRAITS: (missing: string[]) => `Please select: ${missing.map(m => m.toLowerCase()).join(", ")} for your NFT.`,
+    UPLOADING_IMAGE: "Uploading NFT image to IPFS...",
+    UPLOADING_METADATA: "Uploading NFT metadata to IPFS...",
     MINTING: "Initiating minting transaction...",
-    MINT_SUCCESS: "NFT Minted Successfully! 🥳 Check your wallet.",
+    MINT_SUCCESS: "NFT Minted Successfully! Check your wallet. 🥳",
     MINT_FAILED: "Minting failed. Please try again.",
     CONFIRMING_TX: "Confirming transaction on blockchain...",
     TX_FAILED: (msg: string) => `Transaction failed: ${msg}`,
-    GENERIC_ERROR: "An unexpected error occurred.",
+    GENERIC_ERROR: "An unexpected error occurred. Please try again.",
+    PINATA_UPLOAD_ERROR: (type: 'image' | 'metadata') => `Failed to upload ${type} to IPFS.`,
 };
 
 export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
     const { assetFolder: folder, name: collectionName, price } = slide;
     const traits = getOrderedTraits();
-    const { showToast } = useToast();
+    const { addToast } = useToast(); // Menggunakan useToast dari context
     const { isConnected, address } = useAccount();
 
     // State lokal
@@ -95,20 +102,16 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
     const [selectedTraits, setSelectedTraits] = useState<SelectedTraits>(
         traits.reduce((acc, t) => ({ ...acc, [t]: "" }), {} as SelectedTraits)
     );
-    const [isUploading, setIsUploading] = useState(false);
-    const [isRandomizing, setIsRandomizing] = useState(false);
-    const [imageFileId, setImageFileId] = useState<string | null>(null);
-    const [metadataFileId, setMetadataFileId] = useState<string | null>(null);
-    // *** New state for global loading overlay ***
-    const [showGlobalLoader, setShowGlobalLoader] = useState(false);
+    const [isUploading, setIsUploading] = useState(false); // Status upload IPFS
+    const [isRandomizing, setIsRandomizing] = useState(false); // Status pengacakan trait
+    const [currentLoaderMessage, setCurrentLoaderMessage] = useState(""); // Pesan untuk loader global
 
-    // Ref untuk melacak status transaksi sebelumnya
+    // Ref untuk melacak status transaksi sebelumnya (untuk menghindari duplikat toast)
     const prevIsConfirming = useRef(false);
     const prevIsConfirmed = useRef(false);
     const prevTxError = useRef<BaseError | Error | null>(null);
 
     // Cache gambar yang sudah dimuat untuk optimasi
-    // Kunci adalah path gambar, nilai adalah objek Image yang sudah dimuat
     const imageCache = useRef<Map<string, HTMLImageElement>>(new Map());
 
     // Wagmi hooks untuk interaksi dengan smart contract
@@ -127,25 +130,30 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
     const {
         data: txHash,
         error: txError,
-        isPending,
+        isPending, // True saat transaksi menunggu konfirmasi pengguna di wallet
         writeContract,
     } = useWriteContract();
 
     const { isLoading: isConfirming, isSuccess: isConfirmed } =
         useWaitForTransactionReceipt({ hash: txHash });
 
-    // State turunan untuk indikator komposisi
-    const isComposing = isUploading && !isRandomizing;
+    // State turunan untuk indikator komposisi & minting
+    const isGeneratingPreview = isRandomizing; // Hanya ketika mengacak
+    const isMintingProcess = isPending || isConfirming || isUploading; // Seluruh proses minting
 
     // Fungsi untuk mengacak trait
     const handleRandomize = useCallback(() => {
         setIsRandomizing(true);
         const randomTraits = traits.reduce((acc, t) => {
             const options = METADATA_TRAITS[t];
-            return {
-                ...acc,
-                [t]: options[Math.floor(Math.random() * options.length)] || "",
-            };
+            // Pastikan ada opsi yang tersedia
+            if (options && options.length > 0) {
+                return {
+                    ...acc,
+                    [t]: options[Math.floor(Math.random() * options.length)],
+                };
+            }
+            return acc; // Lewati jika tidak ada opsi
         }, {} as SelectedTraits);
 
         setTimeout(() => {
@@ -169,7 +177,7 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
     const composeImage = useCallback(
         async (traitsMap: SelectedTraits): Promise<string> => {
             const canvas = document.createElement("canvas");
-            const size = 512; // Ukuran gambar NFT
+            const size = 520; // Ukuran gambar NFT, sedikit lebih besar untuk menghindari artefak
             canvas.width = size;
             canvas.height = size;
             const ctx = canvas.getContext("2d");
@@ -177,19 +185,24 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
                 throw new Error("Canvas context not available");
             }
 
+            // Gambar latar belakang default jika tidak ada background terpilih
+            if (!traitsMap["Background"]) {
+                ctx.fillStyle = "#F0F0F0"; // Warna abu-abu terang default
+                ctx.fillRect(0, 0, size, size);
+            }
+
             for (const t of LAYER_ORDER) {
                 const asset = traitsMap[t];
-                if (!asset) continue; // Lewati jika trait tidak dipilih
+                if (!asset) continue;
 
                 const imagePath = `/assets/${folder}/${t}/${asset}`;
                 let img = imageCache.current.get(imagePath);
 
                 if (!img) {
-                    // Jika gambar belum ada di cache, muat
                     img = await new Promise<HTMLImageElement>((resolve, reject) => {
                         const newImg = new Image();
                         newImg.onload = () => {
-                            imageCache.current.set(imagePath, newImg); // Simpan ke cache
+                            imageCache.current.set(imagePath, newImg);
                             resolve(newImg);
                         };
                         newImg.onerror = () => {
@@ -202,48 +215,59 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
                 ctx.drawImage(img, 0, 0, size, size);
             }
 
-            return canvas.toDataURL("image/webp", 0.9); // Mengembalikan Data URL gambar
+            return canvas.toDataURL("image/webp", 0.9);
         },
         [folder]
     );
 
     // Logika minting
     const handleMint = useCallback(async () => {
-        // Validasi awal menggunakan konstan pesan toast
+        // Validasi awal
         if (!isConnected || !address) {
-            return showToast(TOAST_MESSAGES.CONNECT_WALLET, "error");
+            return addToast({ message: TOAST_MESSAGES.CONNECT_WALLET, type: "error" });
         }
-        // Menggunakan BigInt untuk perbandingan yang akurat
+
         if ((balance?.value ?? BigInt(0)) < parseEther(price)) {
-            return showToast(TOAST_MESSAGES.INSUFFICIENT_BALANCE, "error");
+            return addToast({ message: TOAST_MESSAGES.INSUFFICIENT_BALANCE, type: "error" });
         }
-        // Memastikan maxSupply dan totalSupply adalah BigInt untuk perbandingan yang tepat
+
         if (totalSupply !== undefined && maxSupply !== undefined && totalSupply >= maxSupply) {
-            return showToast(TOAST_MESSAGES.MAX_SUPPLY_REACHED, "error");
+            return addToast({ message: TOAST_MESSAGES.MAX_SUPPLY_REACHED, type: "error" });
         }
 
         const missingTraits = traits.filter((t) => !selectedTraits[t]);
         if (missingTraits.length) {
-            return showToast(TOAST_MESSAGES.MISSING_TRAITS(missingTraits), "error");
+            return addToast({ message: TOAST_MESSAGES.MISSING_TRAITS(missingTraits), type: "error" });
         }
 
-        setShowGlobalLoader(true); // Tampilkan loader global
-        setIsUploading(true);
+        // --- Proses Minting Dimulai ---
+        setCurrentLoaderMessage("Preparing your NFT..."); // Pesan awal loader
+        setIsUploading(true); // Mengindikasikan proses upload dimulai
+
         try {
-            showToast(TOAST_MESSAGES.UPLOADING_IMAGE, "info");
+            // 1. Upload Image to IPFS
+            addToast({ message: TOAST_MESSAGES.UPLOADING_IMAGE, type: "info" });
+            setCurrentLoaderMessage(TOAST_MESSAGES.UPLOADING_IMAGE);
+
             const dataUrl = await composeImage(selectedTraits);
             const blob = await fetch(dataUrl).then((r) => r.blob());
             const ts = Date.now();
             const prefix = address ? `${address.slice(2, 6)}_${address.slice(-4)}` : "anon";
             const imageName = `${collectionName}_${prefix}_${ts}_img.webp`;
-            const imageFile = new File([blob], imageName, {
-                type: "image/webp",
-                lastModified: ts,
-            });
-            const imgRes = await pinata.upload.public.file(imageFile); // <--- ERROR DISINI
-            setImageFileId(imgRes.id);
+            const imageFile = new File([blob], imageName, { type: "image/webp", lastModified: ts });
 
-            showToast(TOAST_MESSAGES.UPLOADING_METADATA, "info");
+            let imgRes;
+            try {
+                imgRes = await pinata.upload.public.file(imageFile);
+            } catch (pinataError) {
+                console.error("Pinata image upload error:", pinataError);
+                throw new Error(TOAST_MESSAGES.PINATA_UPLOAD_ERROR('image'));
+            }
+
+            // 2. Upload Metadata to IPFS
+            addToast({ message: TOAST_MESSAGES.UPLOADING_METADATA, type: "info" });
+            setCurrentLoaderMessage(TOAST_MESSAGES.UPLOADING_METADATA);
+
             const metadata = {
                 name: collectionName,
                 description: "Unique Herbivores NFT",
@@ -254,17 +278,24 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
                 })),
                 created_at: new Date().toISOString(),
             };
-            const metaBlob = new Blob([JSON.stringify(metadata)], {
-                type: "application/json",
-            });
-            const metaFile = new File(
-                [metaBlob],
-                `${collectionName}_${prefix}_${ts}_meta.json`,
-                { type: "application/json" }
-            );
-            const metaRes = await pinata.upload.public.file(metaFile); // <--- ATAU DISINI
-            setMetadataFileId(metaRes.id);
-            showToast(TOAST_MESSAGES.MINTING, "info");
+            const metaBlob = new Blob([JSON.stringify(metadata)], { type: "application/json" });
+            const metaFile = new File([metaBlob], `${collectionName}_${prefix}_${ts}_meta.json`, { type: "application/json" });
+
+            let metaRes;
+            try {
+                metaRes = await pinata.upload.public.file(metaFile);
+            } catch (pinataError) {
+                console.error("Pinata metadata upload error:", pinataError);
+                // Jika metadata gagal diupload, coba hapus gambar yang sudah diupload
+                // (Ini opsional, tergantung kebijakan Anda)
+                // await pinata.files.public.delete([imgRes.id]);
+                throw new Error(TOAST_MESSAGES.PINATA_UPLOAD_ERROR('metadata'));
+            }
+
+            // 3. Initiate Minting Transaction
+            addToast({ message: TOAST_MESSAGES.MINTING, type: "info" });
+            setCurrentLoaderMessage(TOAST_MESSAGES.MINTING);
+
             writeContract({
                 address: HerbivoresAddress,
                 abi: HerbivoresABI,
@@ -272,11 +303,16 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
                 args: [`ipfs://${metaRes.cid}`],
                 value: parseEther(price),
             });
+
         } catch (err) {
-            console.error(err);
-            showToast("Mint failed", "error");
+            console.error("Minting process error:", err);
+            const errorMessage = (err instanceof Error) ? err.message : TOAST_MESSAGES.GENERIC_ERROR;
+            addToast({ message: errorMessage, type: "error" });
+            setIsUploading(false); // Pastikan status upload direset
+            setCurrentLoaderMessage(""); // Bersihkan pesan loader
         } finally {
-            setIsUploading(false);
+            // setIsUploading(false); // Jangan langsung matikan di sini, biarkan useEffect Wagmi yang menangani
+            // setShowGlobalLoader(false); // Jangan langsung matikan di sini
         }
     }, [
         isConnected,
@@ -287,64 +323,64 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
         selectedTraits,
         composeImage,
         writeContract,
-        showToast,
+        addToast,
         traits,
         collectionName,
         price,
     ]);
 
-    // Efek samping untuk notifikasi transaksi dan pembersihan Pinata
+    // Efek samping untuk notifikasi transaksi Wagmi dan pembersihan
     useEffect(() => {
         // Notifikasi "Confirming..."
         if (isConfirming && !prevIsConfirming.current) {
-            showToast(TOAST_MESSAGES.CONFIRMING_TX, "info");
+            addToast({ message: TOAST_MESSAGES.CONFIRMING_TX, type: "info" });
+            setCurrentLoaderMessage(TOAST_MESSAGES.CONFIRMING_TX);
         }
         prevIsConfirming.current = isConfirming;
 
         // Notifikasi "Minted!"
         if (isConfirmed && !prevIsConfirmed.current) {
-            showToast(TOAST_MESSAGES.MINT_SUCCESS, "success");
-            setShowGlobalLoader(false); // Sembunyikan loader global saat sukses
-            onClose(); // Mungkin tutup popup setelah minting sukses
+            addToast({ message: TOAST_MESSAGES.MINT_SUCCESS, type: "success" });
+            setCurrentLoaderMessage("Minting complete!");
+            // Berikan waktu sejenak untuk user melihat pesan sukses sebelum menutup popup
+            setTimeout(() => {
+                onClose();
+                setCurrentLoaderMessage(""); // Reset pesan loader
+                setIsUploading(false); // Reset status upload
+            }, 1500); // Delay 1.5 detik
         }
         prevIsConfirmed.current = isConfirmed;
 
-        // Penanganan error transaksi
+        // Penanganan error transaksi Wagmi
         if (txError && txError !== prevTxError.current) {
             const errorMessage =
                 txError instanceof BaseError
                     ? txError.shortMessage || txError.message
                     : TOAST_MESSAGES.GENERIC_ERROR;
-            showToast(TOAST_MESSAGES.TX_FAILED(errorMessage), "error");
+            addToast({ message: TOAST_MESSAGES.TX_FAILED(errorMessage), type: "error" });
+            setCurrentLoaderMessage(""); // Reset pesan loader
+            setIsUploading(false); // Reset status upload
+            // Tidak perlu menghapus file dari Pinata di sini, karena Pinata upload sudah ditangani di try-catch handleMint
+            // dan penghapusan otomatis dari Pinata mungkin tidak diinginkan jika NFT akhirnya di-mint oleh orang lain
+            // atau jika Anda ingin debug manual. Ini adalah keputusan desain.
+        }
+        prevTxError.current = txError;
 
-            // Hapus file dari Pinata jika transaksi gagal
-            (async () => {
-                if (imageFileId) {
-                    console.log("Deleting image from Pinata:", imageFileId);
-                    await pinata.files.public.delete([imageFileId]);
-                }
-                if (metadataFileId) {
-                    console.log("Deleting metadata from Pinata:", metadataFileId);
-                    await pinata.files.public.delete([metadataFileId]);
-                }
-            })();
-            setShowGlobalLoader(false); // Sembunyikan loader global saat error
-            prevTxError.current = txError;
+        // Kapan global loader harus disembunyikan
+        // Sembunyikan loader global jika tidak ada lagi proses minting yang aktif,
+        // dan tidak ada error transaksi baru yang perlu ditangani.
+        if (!isPending && !isConfirming && !isUploading && !txError && currentLoaderMessage) {
+            setCurrentLoaderMessage("");
         }
 
-        // Jika transaksi selesai (sukses atau gagal) dan tidak ada lagi yang pending/confirming/uploading, sembunyikan loader
-        if (!isPending && !isConfirming && !isUploading && showGlobalLoader) {
-            setShowGlobalLoader(false);
-        }
+    }, [isConfirming, isConfirmed, txError, addToast, onClose, isPending, isUploading, currentLoaderMessage]);
 
-    }, [isConfirming, isConfirmed, txError, imageFileId, metadataFileId, showToast, showGlobalLoader, isPending, isUploading, onClose]);
 
     // Status komputasi untuk menonaktifkan tombol
-    const isGenerating = isUploading || isRandomizing; // Untuk Randomize/Compose
-    const isMinting = isPending || isConfirming || isUploading; // Untuk tombol Mint
+    const isGeneratingOrProcessing = isRandomizing || isMintingProcess; // Menggabungkan semua state loading
 
     // URL gambar pratinjau yang disusun
-    const previewImage = useMemo(
+    const previewImageSources = useMemo(
         () =>
             LAYER_ORDER.filter((t) => selectedTraits[t]).map(
                 (t) => `/assets/${folder}/${t}/${selectedTraits[t]}`
@@ -352,13 +388,19 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
         [selectedTraits, folder]
     );
 
+    // Hitung persentase supply
+    const currentTotalSupply = Number(totalSupply || BigInt(0));
+    const currentMaxSupply = Number(maxSupply || BigInt(1));
+    const supplyProgressPercentage = (currentTotalSupply / currentMaxSupply) * 100;
+    const isSupplySoldOut = currentTotalSupply >= currentMaxSupply;
+
+
     return (
         <>
             {/* *** Global Loading Overlay *** */}
-            {showGlobalLoader && (
+            {isMintingProcess && ( // Tampilkan loader hanya jika ada proses minting aktif
                 <div className="fixed inset-0 z-[100] bg-black/70 flex flex-col items-center justify-center text-white text-lg">
-                    <Loader className="w-12 h-12 text-teal-400 animate-spin mb-4" />
-                    <p>Processing transaction...</p>
+                    <LoadingSpinner fullScreen={false} message={currentLoaderMessage || "Processing transaction..."} />
                     <p className="text-sm text-gray-300 mt-2">Please wait, this might take a moment.</p>
                 </div>
             )}
@@ -442,14 +484,14 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
                         {/* Panel Pratinjau Gambar dan Randomize */}
                         <div className="bg-white w-full md:w-1/2 p-4 sm:p-6 flex flex-col gap-4 rounded-xl shadow-lg flex-shrink-0 max-h-none md:max-h-full">
                             <div className="aspect-square bg-white rounded-2xl overflow-hidden flex items-center justify-center">
-                                {isComposing || isRandomizing ? (
+                                {isGeneratingPreview ? (
                                     <div className="flex flex-col items-center space-y-4 text-gray-600 dark:text-gray-300 animate-pulse">
                                         <Loader className="w-12 h-12 text-teal-500 animate-spin" />
                                         <p className="text-base font-medium">Assembling your unique NFT...</p>
                                     </div>
-                                ) : previewImage.length ? (
+                                ) : previewImageSources.length ? (
                                     <div className="relative w-full h-full animate-fade-in-up">
-                                        {previewImage.map((src, i) => (
+                                        {previewImageSources.map((src, i) => (
                                             <img
                                                 key={i}
                                                 src={src}
@@ -468,7 +510,7 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
                             </div>
                             <button
                                 onClick={handleRandomize}
-                                disabled={isGenerating}
+                                disabled={isGeneratingOrProcessing}
                                 className="w-full bg-gradient-to-r from-teal-500 to-blue-500 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition duration-300 hover:from-teal-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-teal-400 flex items-center justify-center gap-2 transform active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
                             >
                                 {isRandomizing ? (
@@ -545,14 +587,32 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
                             </div>
                         </div>
 
+                        {/* Progress Bar Supply (Disamakan dengan RafflePage.tsx) */}
+                        <div className="mt-5 mb-4"> {/* Menggunakan mt-5 dan mb-4 seperti RafflePage */}
+                            <div className="flex justify-between text-xs text-gray-300 mb-1"> {/* Warna teks disesuaikan untuk background gelap */}
+                                <span>Progress</span>
+                                <span>{Math.round(supplyProgressPercentage)}% Sold</span>
+                            </div>
+                            <div className="w-full bg-gray-600 rounded-full h-2"> {/* Warna background bar disesuaikan */}
+                                <div
+                                    className="bg-teal-500 h-2 rounded-full transition-all duration-500 ease-out" // Warna progress dan transisi sama
+                                    style={{ width: `${supplyProgressPercentage}%` }}
+                                ></div>
+                            </div>
+                            <p className="text-right text-xs text-gray-300 mt-1"> {/* Warna teks disesuaikan untuk background gelap */}
+                                {isSupplySoldOut ? "Sold Out!" : `${currentTotalSupply.toLocaleString()}/${currentMaxSupply.toLocaleString()} minted`}
+                            </p>
+                        </div>
+
+
                         {/* Tombol Mint */}
                         <button
                             onClick={handleMint}
-                            disabled={!isConnected || isMinting || !previewImage.length}
-                            aria-busy={isMinting}
+                            disabled={!isConnected || isMintingProcess || previewImageSources.length === 0} // Nonaktifkan jika belum ada gambar yang dipilih
+                            aria-busy={isMintingProcess ? "true" : "false"}
                             className="w-full bg-gradient-to-r from-green-500 to-teal-600 text-white text-xl font-bold py-3 rounded-xl shadow-lg transition-all duration-300 hover:from-green-600 hover:to-teal-700 focus:outline-none focus:ring-4 focus:ring-green-400/50 flex items-center justify-center gap-3 transform active:scale-98 disabled:opacity-40 disabled:cursor-not-allowed"
                         >
-                            {isMinting ? (
+                            {isMintingProcess ? (
                                 <>
                                     <Loader className="animate-spin" size={24} /> Minting...
                                 </>
@@ -560,22 +620,6 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
                                 "Mint Your NFT"
                             )}
                         </button>
-
-                        {/* Progress Bar Supply */}
-                        <div className="relative mt-2 h-2 bg-gray-600 rounded-full overflow-hidden">
-                            <div
-                                className="absolute h-full bg-white transition-all duration-300"
-                                style={{
-                                    width: `${
-                                        // Konversi BigInt ke Number untuk persentase (asumsi tidak akan melebihi MAX_SAFE_INTEGER)
-                                        (Number(totalSupply || BigInt(0)) / Number(maxSupply || BigInt(1))) * 100
-                                        }%`,
-                                }}
-                            />
-                        </div>
-                        <div className="text-xs sm:text-sm text-white/70 text-right">
-                            {totalSupply?.toString() || "0"}/{maxSupply?.toString() || "0"}
-                        </div>
 
                         {/* Footer */}
                         <div className="pt-2 border-t border-gray-700 text-center">
