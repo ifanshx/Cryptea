@@ -1,40 +1,28 @@
-// app/(routes)/page.tsx
+// src/app/(dashboard)/home/page.tsx
+
+
 "use client"; // Pastikan ini ada di baris pertama
 import React, { useState, useCallback, useMemo, useEffect } from "react";
 import MintPopup from "@/components/MintPopup";
 import { useCarousel } from "@/hooks/useCarousel";
 import GeneratePopup from "@/components/GeneratePopup";
+import { HerbivoresABI, HerbivoresAddress, EtherealEntitiesAddress, EtherealEntitiesABI } from "@/constants/ContractAbi";
+import {
+  HERBIVORE_METADATA_TRAITS,
+  HERBIVORE_LAYER_ORDER,
+} from "@/constants/Herbivores/Herbivores_traits";
 
-// Local Enum dan Types
-enum Status {
-  LIVE = "Live",
-  FINISH = "Finish",
-  LIVE_GENERATE = "Live Generate",
-  COMING_SOON = "Coming Soon",
-}
+import {
+  ETHEREAL_ENTITY_METADATA_TRAITS,
+  ETHEREAL_ENTITY_LAYER_ORDER,
+} from "@/constants/EtherealEntities/EtherealEntities_traits";
 
-interface CarouselSlide {
-  name: string;
-  image: string;
-  status: Status;
-  button: string;
-  openseaSlug: string;
-  price: string;
-  assetFolder: string;
-}
+import { Status, CarouselSlide, TrendingCollection } from "@/types";
+const EtherealEntities_ID = "75f6d9f0-0ca2-4e1a-899e-2ff788777adb";
+const HERBIVORE_ID = "bd0659fa-ff67-4894-97e1-e103f1351a47";
 
-interface TrendingCollection {
-  name: string;
-  floor: string;
-  floorChange: string;
-  volume24: string;
-  volume24Change: string;
-  totalVolume: string;
-  totalVolumeChange: string;
-  owners: number;
-  supply: number;
-  avatar: string;
-}
+
+
 
 const CAROUSEL_SLIDES: CarouselSlide[] = [
   {
@@ -45,6 +33,26 @@ const CAROUSEL_SLIDES: CarouselSlide[] = [
     openseaSlug: "Herbivores",
     assetFolder: "Herbivores",
     price: "2",
+    // Pastikan properti ini ada dan sesuai dengan definisi di types/index.ts
+    contractAddress: HerbivoresAddress,
+    contractABI: HerbivoresABI,
+    metadataTraits: HERBIVORE_METADATA_TRAITS,
+    layerOrder: HERBIVORE_LAYER_ORDER,
+    PinataGrup: HERBIVORE_ID // Pastikan EtherealEntities_ID sudah didefinisikan
+  },
+  {
+    name: "Ethereal Entities",
+    image: "/images/banner3.png",
+    status: Status.LIVE_GENERATE,
+    button: "Mint Collection",
+    openseaSlug: "etehereal-entities",
+    assetFolder: "EtherealEntities",
+    price: "2",
+    contractAddress: EtherealEntitiesAddress, // Pastikan EtherealEntitiesAddress sudah didefinisikan
+    contractABI: EtherealEntitiesABI, // Pastikan ABI ini sudah didefinisikan
+    metadataTraits: ETHEREAL_ENTITY_METADATA_TRAITS, // Pastikan traits ini sudah didefinisikan
+    layerOrder: ETHEREAL_ENTITY_LAYER_ORDER, // Pastikan layerOrder ini sudah didefinisikan
+    PinataGrup: EtherealEntities_ID
   },
   {
     name: "Tea in The House",
@@ -54,17 +62,15 @@ const CAROUSEL_SLIDES: CarouselSlide[] = [
     openseaSlug: "tea-in-the-house",
     assetFolder: "tea-in-the-house",
     price: "0.2",
+    // Tidak ada kontrak untuk koleksi ini
+    contractAddress: undefined,
+    contractABI: undefined,
+    metadataTraits: undefined,
+    layerOrder: undefined,
+    PinataGrup: "tea-in-the-house" // Grup Pinata untuk koleksi ini
   },
-  {
-    name: "Ethereal Entities",
-    image: "/images/comingsoon.png",
-    status: Status.COMING_SOON,
-    button: "Coming Soon",
-    openseaSlug: "etehereal-entities",
-    assetFolder: "EtherealEntities",
-    price: "0.15",
-  },
-  
+
+
 ];
 
 const HomePage = () => {

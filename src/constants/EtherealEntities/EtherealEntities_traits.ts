@@ -1,18 +1,12 @@
-interface MetadataTraits {
-  Background: string[];
-  Speciality: string[];
-  Skin: string[];
-  Clothes: string[];
-  Beard: string[];
-  Head: string[];
-  Eyes: string[];
-  Mustache: string[];
-  Nose: string[];
-  Coin: string[];
-  Hands: string[];
-}
+// src/constants/EtherealEntities/EtherealEntities_traits.ts
 
-const METADATA_TRAITS: MetadataTraits = {
+/**
+ * @constant ETHEREAL_ENTITY_METADATA_TRAITS
+ * @description Objek konstanta yang berisi daftar nilai sifat untuk setiap kategori metadata Herbivores.
+ * Menggunakan `as const` untuk memastikan properti-propertinya adalah literal.
+ */
+
+export const ETHEREAL_ENTITY_METADATA_TRAITS = {
   Background: [
     "Daylight.png",
     "Denim.png",
@@ -305,6 +299,36 @@ const METADATA_TRAITS: MetadataTraits = {
     "zl.png",
     "zm.png",
   ],
-};
+} as const;
 
-export { METADATA_TRAITS };
+/**
+ * @typedef {typeof ETHEREAL_ENTITY_METADATA_TRAITS} EtherealEntityMetadataTraits
+ * @description Mendefinisikan tipe untuk struktur sifat-sifat metadata Herbivores.
+ */
+export type EtherealEntityMetadataTraits =
+  typeof ETHEREAL_ENTITY_METADATA_TRAITS;
+
+/**
+ * @constant
+ * @description Mendefinisikan urutan layer untuk rendering sifat Herbivores.
+ * Menggunakan `as const` untuk memastikan array bersifat immutable dan tipe-nya adalah tuple literal.
+ */
+export const ETHEREAL_ENTITY_LAYER_ORDER = [
+  "Background",
+  "Speciality",
+  "Skin",
+  "Clothes",
+  "Beard",
+  "Head",
+  "Eyes",
+  "Mustache",
+  "Nose",
+  "Coin",
+  "Hands",
+] as const;
+
+/**
+ * @typedef {typeof ETHEREAL_ENTITY_LAYER_ORDER} HerbivoreLayerOrder
+ * @description Mendefinisikan tipe untuk urutan layer sifat Herbivores.
+ */
+export type HerbivoreLayerOrder = typeof ETHEREAL_ENTITY_LAYER_ORDER;

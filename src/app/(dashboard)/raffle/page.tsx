@@ -141,10 +141,10 @@ export default function RafflePage() {
   }, [addToast]);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-max bg-gray-50 py-12 px-2 sm:px-6 lg:px-8">
       {/* Container utama untuk scrolling horizontal */}
       {/* Tambahkan kelas 'hide-scrollbar' di sini */}
-      <div className="max-w-7xl mx-auto flex overflow-x-auto pb-4 hide-scrollbar">
+      <div className="max-w-7xl mx-auto flex overflow-x-auto pb-10 hide-scrollbar">
         {raffleNFTs.map((nft, idx) => {
           const { display: timeLeftDisplay, ended: raffleEnded } = timeRemaining[idx];
           const ticketsAvailable = nft.totalTickets - nft.ticketsSold;

@@ -1,13 +1,11 @@
-interface MetadataTraits {
-  Background: string[];
-  Body: string[];
-  Eyes: string[];
-  Head: string[];
-  Mouth: string[];
-  Neck: string[];
-}
+// src/constants/Herbivores/Herbivores_traits.ts
 
-const METADATA_TRAITS: MetadataTraits = {
+/**
+ * @constant HERBIVORE_METADATA_TRAITS
+ * @description Objek konstanta yang berisi daftar nilai sifat untuk setiap kategori metadata Herbivores.
+ * Menggunakan `as const` untuk memastikan properti-propertinya adalah literal.
+ */
+export const HERBIVORE_METADATA_TRAITS = {
   Background: [
     "Planet ABC.PNG",
     "Planet Anemone.PNG",
@@ -80,11 +78,20 @@ const METADATA_TRAITS: MetadataTraits = {
     "Weed.PNG",
   ],
   Neck: ["Belt.PNG", "Silver Chain.PNG", "Star Scarf.PNG", "Violet Scarf.PNG"],
-};
+} as const; // <--- PENTING: Tambahkan 'as const' di sini
 
-export { METADATA_TRAITS };
+/**
+ * @typedef {typeof HERBIVORE_METADATA_TRAITS} HerbivoreMetadataTraits
+ * @description Mendefinisikan tipe untuk struktur sifat-sifat metadata Herbivores.
+ */
+export type HerbivoreMetadataTraits = typeof HERBIVORE_METADATA_TRAITS;
 
-export const LAYER_ORDER = [
+/**
+ * @constant HERBIVORE_LAYER_ORDER
+ * @description Mendefinisikan urutan layer untuk rendering sifat Herbivores.
+ * Menggunakan `as const` untuk memastikan array bersifat immutable dan tipe-nya adalah tuple literal.
+ */
+export const HERBIVORE_LAYER_ORDER = [
   "Background",
   "Body",
   "Eyes",
@@ -92,3 +99,9 @@ export const LAYER_ORDER = [
   "Mouth",
   "Neck",
 ] as const;
+
+/**
+ * @typedef {typeof HERBIVORE_LAYER_ORDER} HerbivoreLayerOrder
+ * @description Mendefinisikan tipe untuk urutan layer sifat Herbivores.
+ */
+export type HerbivoreLayerOrder = typeof HERBIVORE_LAYER_ORDER;

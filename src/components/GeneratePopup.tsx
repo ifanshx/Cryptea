@@ -1,4 +1,5 @@
-// components/GeneratePopup.tsx
+// src/components/GeneratePopup.tsx
+
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -11,13 +12,18 @@ import {
     useWriteContract,
 } from "wagmi";
 import { parseEther } from "viem";
-import { Images, Loader, Shuffle, Sparkles, } from "lucide-react"; // Import X untuk tombol tutup popup
+import { Images, Loader, Shuffle, Sparkles, } from "lucide-react";
 
 import { PinataSDK } from "pinata";
-import { useToast } from "@/context/ToastContext"; // Sesuaikan path jika berbeda
-import { METADATA_TRAITS } from "@/constants/Herbivores/Herbivores_traits";
-import { HerbivoresABI, HerbivoresAddress } from "@/constants/ContractAbi";
-import LoadingSpinner from "@/components/LoadingSekleton"; // Import komponen LoadingSpinner yang sudah disempurnakan
+import { useToast } from "@/context/ToastContext";
+import {
+
+    GenericTraitType,
+    SelectedGenericTraits,
+    GeneratePopupProps,
+} from "@/types";
+
+import LoadingSpinner from "@/components/LoadingSekleton";
 
 // =================================================================
 // NOTE PENTING:
@@ -25,54 +31,17 @@ import LoadingSpinner from "@/components/LoadingSekleton"; // Import komponen Lo
 // Mengekspos JWT di client-side adalah risiko keamanan yang serius.
 // Untuk tujuan demonstrasi dan perbaikan, JWT tetap di sini,
 // TAPI HARAP PINDAHKAN KE BACKEND SESUAI BEST PRACTICE KEAMANAN!
+
+// Grup ID : bd0659fa-ff67-4894-97e1-e103f1351a47
+// API Key: 4a02550876e9407b06b0
+// API Secret: a498f261d782dbdce69aedfe04dae2ae34a43d6f2c5c05c8472e2f5265c077e8
+// JWT: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJhZGM4OGQ0OC0wMDg4LTRjMmMtOGIxMS01NjRkODQxZTMwYzAiLCJlbWFpbCI6ImlyZmFhbnNob29kaXExOTU0QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwaW5fcG9saWN5Ijp7InJlZ2lvbnMiOlt7ImRlc2lyZWRSZXBsaWNhdGlvbkNvdW50IjoxLCJpZCI6IkZSQTEifV0sInZlcnNpb24iOjF9LCJtZmFfZW5hYmVsZWRpOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoiY29wZWRLZXkiLCJzY29wZWRLZXlLZXkiOiI0YTAyNTUwODc2ZTk0MDdiMDZiMCIsInNjb3BlZEtleVNlY3JldCI6ImE0OThmMjYxZDc4MmRiZGNlNjlhZWRmZTA0ZGFlMmFlMzRhNDNkNmYyYzVjMDVjODQ3MmUyZjUyNjVjMDc3ZTgiLCJleHAiOjE3Nzk5OTg2MjF9.xgmNyop5UEbZgpuMhIOLqg2rCHvT-JnkRU0SN_1ulDE
 // =================================================================
 const pinata = new PinataSDK({
-    pinataJwt: process.env.NEXT_PUBLIC_PINATA_JWT || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJhZGM4OGQ0OC0wMDg4LTRjMmMtOGIxMS01NjRkODQxZTMwYzAiLCJlbWFpbCI6ImlyZmFhbnNob29kaXExOTU0QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwaW5fcG9saWN5Ijp7InJlZ2lvbnMiOlt7ImRlc2lyZWRSZXBsaWNhdGlvbkNvdW50IjoxLCJpZCI6IkZSQTEifV0sInZlcnNpb24iOjF9LCJtZmFfZW5hYmxlZCI6ZmFsc2UsInN0YXR1cyI6IkFDVElWRSJ9LCJhdXRoZW50aWNhdGlvblR5cGUiOiJzY29wZWRLZXkiLCJzY29wZWRLZXlLZXkiOiI1ZmRkZjMxZTA2NDY3NjBlM2MzZjkiLCJzY29wZWRLZXlTZWNyZXQiOiI1MGViZWNmZDhjYjRkMDJiZThhYzk0NzM4YjRmOWViZTJhNTI3M2RlZjdjNDgyMmYwZjdhMjhiNjc3NDY2ZjZiYiIsImV4cCI6MTc3OTcyODgyNX0.OznvnGrfq_ztmcQwJ06wnGWHP2DiodSwG6dKNxuDQ14",
+    pinataJwt: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJhZGM4OGQ0OC0wMDg4LTRjMmMtOGIxMS01NjRkODQxZTMwYzAiLCJlbWFpbCI6ImlyZmFhbnNob29kaXExOTU0QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwaW5fcG9saWN5Ijp7InJlZ2lvbnMiOlt7ImRlc2lyZWRSZXBsaWNhdGlvbkNvdW50IjoxLCJpZCI6IkZSQTEifV0sInZlcnNpb24iOjF9LCJtZmFfZW5hYmxlZCI6ZmFsc2UsInN0YXR1cyI6IkFDVElWRSJ9LCJhdXRoZW50aWNhdGlvblR5cGUiOiJzY29wZWRLZXkiLCJzY29wZWRLZXlLZXkiOiI0YTAyNTUwODc2ZTk0MDdiMDZiMCIsInNjb3BlZEtleVNlY3JldCI6ImE0OThmMjYxZDc4MmRiZGNlNjlhZWRmZTA0ZGFlMmFlMzRhNDNkNmYyYzVjMDVjODQ3MmUyZjUyNjVjMDc3ZTgiLCJleHAiOjE3Nzk5OTg2MjF9.xgmNyop5UEbZgpuMhIOLqg2rCHvT-JnkRU0SN_1ulDE",
     pinataGateway: "red-equivalent-hawk-791.mypinata.cloud",
 });
 
-// Tipe untuk trait
-type TraitType = keyof typeof METADATA_TRAITS;
-type SelectedTraits = Record<TraitType, string>;
-
-// Urutan lapisan untuk komposisi gambar
-const LAYER_ORDER: TraitType[] = [
-    "Background",
-    "Body",
-    "Head",
-    "Eyes",
-    "Mouth",
-    "Neck",
-];
-
-// Fungsi untuk mendapatkan trait yang diurutkan
-const getOrderedTraits = (): TraitType[] =>
-    LAYER_ORDER.filter((t) => t in METADATA_TRAITS) as TraitType[];
-
-// Enum untuk status carousel (tidak diubah)
-enum Status {
-    LIVE = "Live",
-    FINISH = "Finish",
-    LIVE_GENERATE = "Live Generate",
-    COMING_SOON = "Coming Soon",
-}
-
-// Interface untuk slide carousel (tidak diubah)
-interface CarouselSlide {
-    name: string;
-    image: string;
-    assetFolder: string;
-    status: Status;
-    button: string;
-    openseaSlug: string;
-    price: string;
-}
-
-// Props untuk komponen GeneratePopup (tidak diubah)
-interface GeneratePopupProps {
-    slide: CarouselSlide;
-    onClose: () => void;
-}
 
 // *** KONSTAN UNTUK PESAN TOAST ***
 const TOAST_MESSAGES = {
@@ -89,22 +58,45 @@ const TOAST_MESSAGES = {
     TX_FAILED: (msg: string) => `Transaction failed: ${msg}`,
     GENERIC_ERROR: "An unexpected error occurred. Please try again.",
     PINATA_UPLOAD_ERROR: (type: 'image' | 'metadata') => `Failed to upload ${type} to IPFS.`,
+    PINATA_DELETE_ERROR: (type: 'image' | 'metadata') => `Failed to delete orphaned ${type} from Pinata.`,
 };
 
 export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
-    const { assetFolder: folder, name: collectionName, price } = slide;
-    const traits = getOrderedTraits();
-    const { addToast } = useToast(); // Menggunakan useToast dari context
+    const {
+        assetFolder: folder,
+        name: collectionName,
+        price,
+        contractAddress,
+        contractABI,
+        metadataTraits,
+        layerOrder,
+        PinataGrup
+    } = slide;
+
+    const traits = useMemo(
+        () =>
+            (layerOrder as GenericTraitType[]).filter(
+                (t) => metadataTraits && t in metadataTraits
+            ) as GenericTraitType[],
+        [layerOrder, metadataTraits]
+    );
+
+
+
+    const { addToast } = useToast();
     const { isConnected, address } = useAccount();
 
     // State lokal
-    const [activeTrait, setActiveTrait] = useState<TraitType>("Background");
-    const [selectedTraits, setSelectedTraits] = useState<SelectedTraits>(
-        traits.reduce((acc, t) => ({ ...acc, [t]: "" }), {} as SelectedTraits)
+    const [activeTrait, setActiveTrait] = useState<GenericTraitType>(traits[0] || "");
+    const [selectedTraits, setSelectedTraits] = useState<SelectedGenericTraits>(
+        traits.reduce((acc, t) => ({ ...acc, [t]: "" }), {} as SelectedGenericTraits)
     );
-    const [isUploading, setIsUploading] = useState(false); // Status upload IPFS
-    const [isRandomizing, setIsRandomizing] = useState(false); // Status pengacakan trait
-    const [currentLoaderMessage, setCurrentLoaderMessage] = useState(""); // Pesan untuk loader global
+    const [isUploading, setIsUploading] = useState(false);
+    const [isRandomizing, setIsRandomizing] = useState(false);
+    const [currentLoaderMessage, setCurrentLoaderMessage] = useState("");
+    // New state to store Pinata file IDs for cleanup
+    const [imageFileId, setImageFileId] = useState<string | null>(null);
+    const [metadataFileId, setMetadataFileId] = useState<string | null>(null);
 
     // Ref untuk melacak status transaksi sebelumnya (untuk menghindari duplikat toast)
     const prevIsConfirming = useRef(false);
@@ -117,20 +109,20 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
     // Wagmi hooks untuk interaksi dengan smart contract
     const { data: balance } = useBalance({ address });
     const { data: maxSupply } = useReadContract({
-        address: HerbivoresAddress,
-        abi: HerbivoresABI,
+        address: contractAddress,
+        abi: contractABI ?? [],
         functionName: "MAX_SUPPLY",
     });
     const { data: totalSupply } = useReadContract({
-        address: HerbivoresAddress,
-        abi: HerbivoresABI,
+        address: contractAddress,
+        abi: contractABI ?? [],
         functionName: "totalSupply",
     });
 
     const {
         data: txHash,
         error: txError,
-        isPending, // True saat transaksi menunggu konfirmasi pengguna di wallet
+        isPending,
         writeContract,
     } = useWriteContract();
 
@@ -138,28 +130,27 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
         useWaitForTransactionReceipt({ hash: txHash });
 
     // State turunan untuk indikator komposisi & minting
-    const isGeneratingPreview = isRandomizing; // Hanya ketika mengacak
-    const isMintingProcess = isPending || isConfirming || isUploading; // Seluruh proses minting
+    const isGeneratingPreview = isRandomizing;
+    const isMintingProcess = isPending || isConfirming || isUploading;
 
     // Fungsi untuk mengacak trait
     const handleRandomize = useCallback(() => {
         setIsRandomizing(true);
         const randomTraits = traits.reduce((acc, t) => {
-            const options = METADATA_TRAITS[t];
-            // Pastikan ada opsi yang tersedia
+            const options = metadataTraits?.[t];
             if (options && options.length > 0) {
                 return {
                     ...acc,
                     [t]: options[Math.floor(Math.random() * options.length)],
                 };
             }
-            return acc; // Lewati jika tidak ada opsi
-        }, {} as SelectedTraits);
+            return acc;
+        }, {} as SelectedGenericTraits);
 
         setTimeout(() => {
             setSelectedTraits(randomTraits);
             setIsRandomizing(false);
-        }, 500); // Penundaan untuk efek visual
+        }, 500);
     }, [traits]);
 
     // Fungsi untuk memilih trait
@@ -167,7 +158,7 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
         (asset: string) => {
             setSelectedTraits((prev) => ({
                 ...prev,
-                [activeTrait]: prev[activeTrait] === asset ? "" : asset, // Toggle selection
+                [activeTrait]: prev[activeTrait] === asset ? "" : asset,
             }));
         },
         [activeTrait]
@@ -175,9 +166,9 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
 
     // Fungsi untuk menyusun gambar dari lapisan dengan caching
     const composeImage = useCallback(
-        async (traitsMap: SelectedTraits): Promise<string> => {
+        async (traitsMap: SelectedGenericTraits): Promise<string> => {
             const canvas = document.createElement("canvas");
-            const size = 520; // Ukuran gambar NFT, sedikit lebih besar untuk menghindari artefak
+            const size = 520;
             canvas.width = size;
             canvas.height = size;
             const ctx = canvas.getContext("2d");
@@ -185,13 +176,12 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
                 throw new Error("Canvas context not available");
             }
 
-            // Gambar latar belakang default jika tidak ada background terpilih
             if (!traitsMap["Background"]) {
-                ctx.fillStyle = "#F0F0F0"; // Warna abu-abu terang default
+                ctx.fillStyle = "#F0F0F0";
                 ctx.fillRect(0, 0, size, size);
             }
 
-            for (const t of LAYER_ORDER) {
+            for (const t of layerOrder ?? []) {
                 const asset = traitsMap[t];
                 if (!asset) continue;
 
@@ -220,6 +210,38 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
         [folder]
     );
 
+    // Fungsi untuk menghapus file dari Pinata
+    const deletePinataFiles = useCallback(async (imgId: string | null, metaId: string | null) => {
+        if (imgId) {
+            try {
+                await pinata.groups.public.removeFiles({
+                    groupId: PinataGrup,
+                    files: imgId ? [imgId] : []
+                });
+                console.log(`Successfully deleted image file from Pinata: ${imgId}`);
+            } catch (deleteError) {
+                console.error(`Failed to delete image file ${imgId} from Pinata:`, deleteError);
+                addToast({ message: TOAST_MESSAGES.PINATA_DELETE_ERROR('image'), type: "warning" });
+            }
+        }
+        if (metaId) {
+            try {
+                await pinata.groups.public.removeFiles({
+                    groupId: PinataGrup,
+                    files: metaId ? [metaId] : []
+                });
+                console.log(`Successfully deleted metadata file from Pinata: ${metaId}`);
+            } catch (deleteError) {
+                console.error(`Failed to delete metadata file ${metaId} from Pinata:`, deleteError);
+                addToast({ message: TOAST_MESSAGES.PINATA_DELETE_ERROR('metadata'), type: "warning" });
+            }
+        }
+        // Reset file IDs after attempting deletion
+        setImageFileId(null);
+        setMetadataFileId(null);
+    }, [addToast]);
+
+
     // Logika minting
     const handleMint = useCallback(async () => {
         // Validasi awal
@@ -231,7 +253,11 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
             return addToast({ message: TOAST_MESSAGES.INSUFFICIENT_BALANCE, type: "error" });
         }
 
-        if (totalSupply !== undefined && maxSupply !== undefined && totalSupply >= maxSupply) {
+        if (
+            totalSupply !== undefined && totalSupply !== null &&
+            maxSupply !== undefined && maxSupply !== null &&
+            totalSupply >= maxSupply
+        ) {
             return addToast({ message: TOAST_MESSAGES.MAX_SUPPLY_REACHED, type: "error" });
         }
 
@@ -241,8 +267,15 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
         }
 
         // --- Proses Minting Dimulai ---
-        setCurrentLoaderMessage("Preparing your NFT..."); // Pesan awal loader
-        setIsUploading(true); // Mengindikasikan proses upload dimulai
+        setCurrentLoaderMessage("Preparing your NFT...");
+        setIsUploading(true);
+
+        // Reset file IDs at the beginning of a new mint attempt
+        setImageFileId(null);
+        setMetadataFileId(null);
+
+        let currentImageFileId: string | null = null;
+        let currentMetadataFileId: string | null = null;
 
         try {
             // 1. Upload Image to IPFS
@@ -258,7 +291,10 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
 
             let imgRes;
             try {
-                imgRes = await pinata.upload.public.file(imageFile);
+                // *** MODIFIKASI INI: Tambahkan .group() saat mengunggah gambar ***
+                imgRes = await pinata.upload.public.file(imageFile).group(PinataGrup);
+                currentImageFileId = imgRes.id;
+                setImageFileId(currentImageFileId); // Store ID in state
             } catch (pinataError) {
                 console.error("Pinata image upload error:", pinataError);
                 throw new Error(TOAST_MESSAGES.PINATA_UPLOAD_ERROR('image'));
@@ -272,7 +308,7 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
                 name: collectionName,
                 description: "Unique Herbivores NFT",
                 image: `ipfs://${imgRes.cid}`,
-                attributes: LAYER_ORDER.map((t) => ({
+                attributes: (layerOrder ?? []).map((t) => ({
                     trait_type: t,
                     value: selectedTraits[t] || "None",
                 })),
@@ -283,12 +319,14 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
 
             let metaRes;
             try {
-                metaRes = await pinata.upload.public.file(metaFile);
+                // *** MODIFIKASI INI: Tambahkan .group() saat mengunggah metadata ***
+                metaRes = await pinata.upload.public.file(metaFile).group(PinataGrup);
+                currentMetadataFileId = metaRes.id;
+                setMetadataFileId(currentMetadataFileId); // Store ID in state
             } catch (pinataError) {
                 console.error("Pinata metadata upload error:", pinataError);
-                // Jika metadata gagal diupload, coba hapus gambar yang sudah diupload
-                // (Ini opsional, tergantung kebijakan Anda)
-                // await pinata.files.public.delete([imgRes.id]);
+                // If metadata upload fails, try to delete the image that was already uploaded
+                await deletePinataFiles(currentImageFileId, null); // Delete only the image
                 throw new Error(TOAST_MESSAGES.PINATA_UPLOAD_ERROR('metadata'));
             }
 
@@ -296,23 +334,31 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
             addToast({ message: TOAST_MESSAGES.MINTING, type: "info" });
             setCurrentLoaderMessage(TOAST_MESSAGES.MINTING);
 
+            if (!contractAddress) {
+                throw new Error("Contract address is missing.");
+            }
             writeContract({
-                address: HerbivoresAddress,
-                abi: HerbivoresABI,
+                address: contractAddress,
+                abi: contractABI ?? [],
                 functionName: "mint",
                 args: [`ipfs://${metaRes.cid}`],
-                value: parseEther(price),
+                ...(price ? { value: parseEther(price) } : {}),
             });
 
         } catch (err) {
             console.error("Minting process error:", err);
             const errorMessage = (err instanceof Error) ? err.message : TOAST_MESSAGES.GENERIC_ERROR;
             addToast({ message: errorMessage, type: "error" });
-            setIsUploading(false); // Pastikan status upload direset
-            setCurrentLoaderMessage(""); // Bersihkan pesan loader
+            // Attempt to delete any files that were uploaded in this failed attempt
+            // This catches errors before or during `writeContract` call
+            if (currentImageFileId || currentMetadataFileId) {
+                await deletePinataFiles(currentImageFileId, currentMetadataFileId);
+            }
+            setIsUploading(false);
+            setCurrentLoaderMessage("");
         } finally {
-            // setIsUploading(false); // Jangan langsung matikan di sini, biarkan useEffect Wagmi yang menangani
-            // setShowGlobalLoader(false); // Jangan langsung matikan di sini
+            // Further cleanup after the entire minting process (including transaction confirmation)
+            // will be handled by the useEffect for txError and isConfirmed
         }
     }, [
         isConnected,
@@ -327,6 +373,7 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
         traits,
         collectionName,
         price,
+        deletePinataFiles // Add deletePinataFiles to the dependency array
     ]);
 
     // Efek samping untuk notifikasi transaksi Wagmi dan pembersihan
@@ -342,12 +389,14 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
         if (isConfirmed && !prevIsConfirmed.current) {
             addToast({ message: TOAST_MESSAGES.MINT_SUCCESS, type: "success" });
             setCurrentLoaderMessage("Minting complete!");
-            // Berikan waktu sejenak untuk user melihat pesan sukses sebelum menutup popup
+            // Reset file IDs after successful mint, no need to delete
+            setImageFileId(null);
+            setMetadataFileId(null);
             setTimeout(() => {
                 onClose();
-                setCurrentLoaderMessage(""); // Reset pesan loader
-                setIsUploading(false); // Reset status upload
-            }, 1500); // Delay 1.5 detik
+                setCurrentLoaderMessage("");
+                setIsUploading(false);
+            }, 1500);
         }
         prevIsConfirmed.current = isConfirmed;
 
@@ -358,31 +407,32 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
                     ? txError.shortMessage || txError.message
                     : TOAST_MESSAGES.GENERIC_ERROR;
             addToast({ message: TOAST_MESSAGES.TX_FAILED(errorMessage), type: "error" });
-            setCurrentLoaderMessage(""); // Reset pesan loader
-            setIsUploading(false); // Reset status upload
-            // Tidak perlu menghapus file dari Pinata di sini, karena Pinata upload sudah ditangani di try-catch handleMint
-            // dan penghapusan otomatis dari Pinata mungkin tidak diinginkan jika NFT akhirnya di-mint oleh orang lain
-            // atau jika Anda ingin debug manual. Ini adalah keputusan desain.
+            setCurrentLoaderMessage("");
+            setIsUploading(false);
+
+            // *** IMPORTANT: Delete files from Pinata if the transaction fails on-chain ***
+            if (imageFileId || metadataFileId) {
+                console.warn("Transaction failed, attempting to delete files from Pinata...");
+                deletePinataFiles(imageFileId, metadataFileId);
+            }
         }
         prevTxError.current = txError;
 
         // Kapan global loader harus disembunyikan
-        // Sembunyikan loader global jika tidak ada lagi proses minting yang aktif,
-        // dan tidak ada error transaksi baru yang perlu ditangani.
         if (!isPending && !isConfirming && !isUploading && !txError && currentLoaderMessage) {
             setCurrentLoaderMessage("");
         }
 
-    }, [isConfirming, isConfirmed, txError, addToast, onClose, isPending, isUploading, currentLoaderMessage]);
+    }, [isConfirming, isConfirmed, txError, addToast, onClose, isPending, isUploading, currentLoaderMessage, imageFileId, metadataFileId, deletePinataFiles]);
 
 
     // Status komputasi untuk menonaktifkan tombol
-    const isGeneratingOrProcessing = isRandomizing || isMintingProcess; // Menggabungkan semua state loading
+    const isGeneratingOrProcessing = isRandomizing || isMintingProcess;
 
     // URL gambar pratinjau yang disusun
     const previewImageSources = useMemo(
         () =>
-            LAYER_ORDER.filter((t) => selectedTraits[t]).map(
+            (layerOrder ?? []).filter((t) => selectedTraits[t]).map(
                 (t) => `/assets/${folder}/${t}/${selectedTraits[t]}`
             ),
         [selectedTraits, folder]
@@ -398,7 +448,7 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
     return (
         <>
             {/* *** Global Loading Overlay *** */}
-            {isMintingProcess && ( // Tampilkan loader hanya jika ada proses minting aktif
+            {isMintingProcess && (
                 <div className="fixed inset-0 z-[100] bg-black/70 flex flex-col items-center justify-center text-white text-lg">
                     <LoadingSpinner fullScreen={false} message={currentLoaderMessage || "Processing transaction..."} />
                     <p className="text-sm text-gray-300 mt-2">Please wait, this might take a moment.</p>
@@ -417,7 +467,7 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
                                     {activeTrait} Selection
                                 </h3>
                                 <span className="text-sm text-gray-500">
-                                    {METADATA_TRAITS[activeTrait].length} options
+                                    {metadataTraits?.[activeTrait]?.length ?? 0} options
                                 </span>
                             </div>
 
@@ -441,7 +491,7 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
                             <div className="block lg:hidden mb-4">
                                 <select
                                     value={activeTrait}
-                                    onChange={(e) => setActiveTrait(e.target.value as TraitType)}
+                                    onChange={(e) => setActiveTrait(e.target.value as GenericTraitType)}
                                     className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-700 focus:ring-2 focus:ring-teal-200"
                                 >
                                     {traits.map((t) => (
@@ -454,7 +504,7 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
 
                             {/* Grid Opsi Trait */}
                             <div className="w-full max-h-[50vh] overflow-y-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 p-3 mb-1">
-                                {METADATA_TRAITS[activeTrait].map((asset) => (
+                                {metadataTraits?.[activeTrait]?.map((asset: string) => (
                                     <button
                                         key={asset}
                                         onClick={() => handleSelectTrait(asset)}
@@ -588,18 +638,18 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
                         </div>
 
                         {/* Progress Bar Supply (Disamakan dengan RafflePage.tsx) */}
-                        <div className="mt-5 mb-4"> {/* Menggunakan mt-5 dan mb-4 seperti RafflePage */}
-                            <div className="flex justify-between text-xs text-gray-300 mb-1"> {/* Warna teks disesuaikan untuk background gelap */}
+                        <div className="mt-5 mb-4">
+                            <div className="flex justify-between text-xs text-gray-300 mb-1">
                                 <span>Progress</span>
                                 <span>{Math.round(supplyProgressPercentage)}% Sold</span>
                             </div>
-                            <div className="w-full bg-gray-600 rounded-full h-2"> {/* Warna background bar disesuaikan */}
+                            <div className="w-full bg-gray-600 rounded-full h-2">
                                 <div
-                                    className="bg-teal-500 h-2 rounded-full transition-all duration-500 ease-out" // Warna progress dan transisi sama
+                                    className="bg-teal-500 h-2 rounded-full transition-all duration-500 ease-out"
                                     style={{ width: `${supplyProgressPercentage}%` }}
                                 ></div>
                             </div>
-                            <p className="text-right text-xs text-gray-300 mt-1"> {/* Warna teks disesuaikan untuk background gelap */}
+                            <p className="text-right text-xs text-gray-300 mt-1">
                                 {isSupplySoldOut ? "Sold Out!" : `${currentTotalSupply.toLocaleString()}/${currentMaxSupply.toLocaleString()} minted`}
                             </p>
                         </div>
@@ -608,7 +658,7 @@ export default function GeneratePopup({ slide, onClose }: GeneratePopupProps) {
                         {/* Tombol Mint */}
                         <button
                             onClick={handleMint}
-                            disabled={!isConnected || isMintingProcess || previewImageSources.length === 0} // Nonaktifkan jika belum ada gambar yang dipilih
+                            disabled={!isConnected || isMintingProcess || previewImageSources.length === 0 || isSupplySoldOut}
                             aria-busy={isMintingProcess ? "true" : "false"}
                             className="w-full bg-gradient-to-r from-green-500 to-teal-600 text-white text-xl font-bold py-3 rounded-xl shadow-lg transition-all duration-300 hover:from-green-600 hover:to-teal-700 focus:outline-none focus:ring-4 focus:ring-green-400/50 flex items-center justify-center gap-3 transform active:scale-98 disabled:opacity-40 disabled:cursor-not-allowed"
                         >
